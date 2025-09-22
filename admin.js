@@ -325,8 +325,14 @@ const SECTION_LAYOUT = [
   },
 ];
 
+const LIBRARY_PREVIEW_LIMIT = 4;
+
 const form = document.getElementById("imageForm");
 const libraryList = document.getElementById("libraryList");
+const libraryModal = document.getElementById("libraryModal");
+const libraryModalList = document.getElementById("libraryModalList");
+const openLibraryModalButton = document.getElementById("openLibraryModal");
+const closeLibraryModalButton = document.getElementById("closeLibraryModal");
 const messageElement = document.getElementById("formMessage");
 const fileInput = document.getElementById("imageFile");
 const urlInput = document.getElementById("imageUrl");
@@ -337,6 +343,7 @@ const flowLinks = document.querySelectorAll(".flow-link[data-target]");
 const contentSaveTimers = new Map();
 const sectionHighlightTimers = new WeakMap();
 let contentMessageTimer;
+let lastFocusedElementBeforeModal = null;
 
 function loadLibrary() {
   try {
@@ -861,66 +868,234 @@ function setupOverviewNavigation() {
   });
 }
 
-function renderLibrary() {
+function buildLibraryCard(image) {
+  const card = document.createElement("article");
+  card.className = "library-card";
+
+  const media = document.createElement("div");
+  media.className = "library-media";
+
+  const preview = document.createElement("img");
+  preview.src = image.src;
+  preview.alt = image.alt || image.name || "Imagen subida";
+  media.append(preview);
+
+  const overlay = document.createElement("div");
+  overlay.className = "library-overlay";
+
+  const badge = document.createElement("span");
+  badge.className = "library-chip";
+  badge.textContent = "Imagen personalizada";
+  overlay.append(badge);
+
+  const title = document.createElement("h3");
+  title.textContent = image.name;
+  overlay.append(title);
+
+  if (image.alt) {
+    const altPreview = document.createElement("p");
+    altPreview.className = "library-overlay-text";
+    altPreview.textContent = image.alt;
+    overlay.append(altPreview);
+  }
+
+  media.append(overlay);
+  card.append(media);
+
+  const meta = document.createElement("div");
+  meta.className = "library-meta";
+
+  const info = document.createElement("div");
+  info.className = "library-info";
+
+  const label = document.createElement("span");
+  label.className = "library-label";
+  label.textContent = "Texto alternativo";
+  info.append(label);
+
+  const alt = document.createElement("p");
+  alt.className = "library-alt";
+  if (!image.alt) {
+    alt.classList.add("is-placeholder");
+  }
+  alt.textContent = image.alt || "Sin texto alternativo";
+  info.append(alt);
+
+  const actions = document.createElement("div");
+  actions.className = "library-actions";
+
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.className = "library-delete";
+  deleteButton.innerHTML =
+    '<span class="library-delete-icon" aria-hidden="true">🗑</span><span>Eliminar</span>';
+  deleteButton.addEventListener("click", () => {
+    const confirmDelete = window.confirm(
+      `¿Eliminar "${image.name}" de la biblioteca? Esta acción también quitará su uso del sitio.`
+    );
+    if (!confirmDelete) {
+      return;
+    }
+    deleteImage(image.id);
+  });
+
+  actions.append(deleteButton);
+  meta.append(info, actions);
+  card.append(meta);
+
+  return card;
+}
+
+function renderLibraryPreview(library) {
   if (!libraryList) {
     return;
   }
 
-  const library = loadLibrary();
   libraryList.innerHTML = "";
 
   if (library.length === 0) {
     const empty = document.createElement("p");
-    empty.className = "admin-note";
+    empty.className = "admin-note library-empty";
     empty.textContent = "Aún no has agregado imágenes personalizadas.";
     libraryList.append(empty);
     return;
   }
 
-  library.forEach((image) => {
-    const card = document.createElement("article");
-    card.className = "library-card";
-
-    const preview = document.createElement("img");
-    preview.src = image.src;
-    preview.alt = image.alt || image.name || "Imagen subida";
-    card.append(preview);
-
-    const body = document.createElement("div");
-    body.className = "library-body";
-
-    const title = document.createElement("h3");
-    title.textContent = image.name;
-    body.append(title);
-
-    const alt = document.createElement("p");
-    alt.className = "small";
-    alt.textContent = image.alt || "Sin texto alternativo";
-    body.append(alt);
-
-    card.append(body);
-
-    const actions = document.createElement("div");
-    actions.className = "library-actions";
-
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.className = "delete-btn";
-    deleteButton.textContent = "Eliminar";
-    deleteButton.addEventListener("click", () => {
-      const confirmDelete = window.confirm(
-        `¿Eliminar "${image.name}" de la biblioteca? Esta acción también quitará su uso del sitio.`
-      );
-      if (!confirmDelete) {
-        return;
-      }
-      deleteImage(image.id);
-    });
-
-    actions.append(deleteButton);
-    card.append(actions);
+  const previewItems = library.slice(0, LIBRARY_PREVIEW_LIMIT);
+  previewItems.forEach((image) => {
+    const card = buildLibraryCard(image);
+    card.classList.add("library-card--preview");
     libraryList.append(card);
   });
+
+  if (library.length > previewItems.length) {
+    const extraCount = library.length - previewItems.length;
+    const moreCard = document.createElement("article");
+    moreCard.className = "library-card library-card--more";
+
+    const moreButton = document.createElement("button");
+    moreButton.type = "button";
+    moreButton.className = "library-more-btn";
+    moreButton.innerHTML = `
+      <span class="library-more-count">+${extraCount}</span>
+      <span class="library-more-label">${
+        extraCount === 1 ? "imagen guardada" : "imágenes guardadas"
+      }</span>
+      <span class="library-more-action">Abrir biblioteca</span>
+    `;
+    moreButton.addEventListener("click", openLibraryModal);
+
+    moreCard.append(moreButton);
+    libraryList.append(moreCard);
+  }
+}
+
+function renderLibraryModal(library) {
+  if (!libraryModalList) {
+    return;
+  }
+
+  libraryModalList.innerHTML = "";
+
+  if (library.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "admin-note";
+    empty.textContent = "Aún no has agregado imágenes personalizadas.";
+    libraryModalList.append(empty);
+    return;
+  }
+
+  library.forEach((image) => {
+    const card = buildLibraryCard(image);
+    libraryModalList.append(card);
+  });
+}
+
+function updateLibraryControls(library) {
+  if (!openLibraryModalButton) {
+    return;
+  }
+
+  if (library.length === 0) {
+    openLibraryModalButton.disabled = true;
+    openLibraryModalButton.setAttribute("aria-disabled", "true");
+  } else {
+    openLibraryModalButton.disabled = false;
+    openLibraryModalButton.removeAttribute("aria-disabled");
+  }
+}
+
+function renderLibrary() {
+  const library = loadLibrary();
+  renderLibraryPreview(library);
+  renderLibraryModal(library);
+  updateLibraryControls(library);
+}
+
+function handleLibraryKeydown(event) {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeLibraryModal();
+  }
+}
+
+function openLibraryModal() {
+  if (!libraryModal) {
+    return;
+  }
+
+  if (libraryModal.classList.contains("is-open")) {
+    return;
+  }
+
+  const activeElement = document.activeElement;
+  if (activeElement instanceof HTMLElement) {
+    lastFocusedElementBeforeModal = activeElement;
+  } else {
+    lastFocusedElementBeforeModal = null;
+  }
+
+  libraryModal.classList.add("is-open");
+  libraryModal.removeAttribute("hidden");
+  libraryModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("no-scroll");
+  libraryModal.addEventListener("keydown", handleLibraryKeydown);
+
+  if (closeLibraryModalButton) {
+    window.requestAnimationFrame(() => {
+      try {
+        closeLibraryModalButton.focus();
+      } catch (error) {
+        // No se requiere manejo especial si el enfoque falla.
+      }
+    });
+  }
+}
+
+function closeLibraryModal() {
+  if (!libraryModal) {
+    return;
+  }
+
+  if (!libraryModal.classList.contains("is-open")) {
+    return;
+  }
+
+  libraryModal.classList.remove("is-open");
+  libraryModal.setAttribute("aria-hidden", "true");
+  libraryModal.setAttribute("hidden", "");
+  document.body.classList.remove("no-scroll");
+  libraryModal.removeEventListener("keydown", handleLibraryKeydown);
+
+  const focusTarget = lastFocusedElementBeforeModal;
+  lastFocusedElementBeforeModal = null;
+  if (focusTarget && typeof focusTarget.focus === "function") {
+    try {
+      focusTarget.focus();
+    } catch (error) {
+      // Ignorar si el elemento ya no es enfocable.
+    }
+  }
 }
 
 function deleteImage(imageId) {
@@ -1022,6 +1197,27 @@ if (fileInput && urlInput) {
 
 if (resetContentButton) {
   resetContentButton.addEventListener("click", resetAllContent);
+}
+
+if (openLibraryModalButton) {
+  openLibraryModalButton.addEventListener("click", openLibraryModal);
+}
+
+if (closeLibraryModalButton) {
+  closeLibraryModalButton.addEventListener("click", closeLibraryModal);
+}
+
+if (libraryModal) {
+  libraryModal.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    if (target.dataset.closeModal === "library" || target === libraryModal) {
+      closeLibraryModal();
+    }
+  });
 }
 
 renderLibrary();
