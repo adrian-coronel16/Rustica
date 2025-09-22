@@ -65,39 +65,49 @@
             </p>
             <ol class="flow-list">
               <li>
-                <span class="flow-step">1</span>
-                <div>
-                  <h3>Hero de portada</h3>
-                  <p>Slider con grandes imágenes y los llamados a la acción principales.</p>
-                </div>
+                <button class="flow-link" type="button" data-target="section-hero">
+                  <span class="flow-step">1</span>
+                  <div>
+                    <h3>Hero de portada</h3>
+                    <p>Slider con grandes imágenes y los llamados a la acción principales.</p>
+                  </div>
+                </button>
               </li>
               <li>
-                <span class="flow-step">2</span>
-                <div>
-                  <h3>Destinos destacados</h3>
-                  <p>Mosaico con seis experiencias inspiradoras para descubrir.</p>
-                </div>
+                <button class="flow-link" type="button" data-target="section-destinos">
+                  <span class="flow-step">2</span>
+                  <div>
+                    <h3>Destinos destacados</h3>
+                    <p>Mosaico con seis experiencias inspiradoras para descubrir.</p>
+                  </div>
+                </button>
               </li>
               <li>
-                <span class="flow-step">3</span>
-                <div>
-                  <h3>Promociones activas</h3>
-                  <p>Tarjetas de ofertas con botón directo a la sección de contacto.</p>
-                </div>
+                <button class="flow-link" type="button" data-target="section-promos">
+                  <span class="flow-step">3</span>
+                  <div>
+                    <h3>Promociones activas</h3>
+                    <p>Tarjetas de ofertas con botón directo a la sección de contacto.</p>
+                  </div>
+                </button>
               </li>
               <li>
-                <span class="flow-step">4</span>
-                <div>
-                  <h3>Historias que inspiran</h3>
-                  <p>Testimonios reales respaldados por fotografías de clientes.</p>
-                </div>
+                <button class="flow-link" type="button" data-target="section-testimonios">
+                  <span class="flow-step">4</span>
+                  <div>
+                    <h3>Historias que inspiran</h3>
+                    <p>Testimonios reales respaldados por fotografías de clientes.</p>
+                  </div>
+                </button>
               </li>
               <li>
-                <span class="flow-step">5</span>
-                <div>
-                  <h3>Contacto y cierre</h3>
-                  <p>Formulario de cotización y una imagen final que refuerza la marca.</p>
-                </div>
+                <button class="flow-link" type="button" data-target="section-contacto">
+                  <span class="flow-step">5</span>
+                  <div>
+                    <h3>Contacto y cierre</h3>
+                    <p>Formulario de cotización y una imagen final que refuerza la marca.</p>
+                  </div>
+                </button>
               </li>
             </ol>
             <div class="overview-footnote">
@@ -160,35 +170,24 @@
               </section>
             </div>
 
-            <section class="admin-card shadow-soft">
-              <div class="section-heading">
-                <div>
-                  <h2>Asignar imágenes al sitio</h2>
-                  <p class="admin-note">
-                    Selecciona qué imagen debe mostrarse en cada sección del landing. Al dejar la opción
-                    predeterminada se conservará la fotografía original del diseño.
-                  </p>
-                </div>
-                <a class="btn btn-secondary" href="index.html">Ver landing</a>
-              </div>
-              <div id="slotAssignments" class="slot-grid" aria-live="polite"></div>
-            </section>
-
             <section class="admin-card shadow-soft content-card">
               <div class="section-heading">
                 <div>
-                  <h2>Personaliza textos y títulos</h2>
+                  <h2>Configura cada sección del landing</h2>
                   <p class="admin-note">
-                    Ajusta los encabezados y mensajes principales para que reflejen la voz de tu marca.
-                    Los cambios se aplican inmediatamente en el landing.
+                    Selecciona las imágenes y ajusta los textos sin salir del mismo bloque. Los cambios se
+                    guardan automáticamente en tu navegador.
                   </p>
                 </div>
-                <button class="btn btn-secondary" type="button" id="resetContentButton">
-                  Restablecer todos los textos
-                </button>
+                <div class="section-actions">
+                  <a class="btn btn-secondary" href="index.html">Ver landing</a>
+                  <button class="btn btn-secondary" type="button" id="resetContentButton">
+                    Restablecer todos los textos
+                  </button>
+                </div>
               </div>
               <p class="form-message" id="contentMessage" aria-live="polite"></p>
-              <div id="contentEditor" class="content-grid"></div>
+              <div id="landingSections" class="landing-sections" aria-live="polite"></div>
             </section>
           </div>
         </div>
