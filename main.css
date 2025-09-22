@@ -308,6 +308,15 @@ nav ul {
   border-radius: 18px;
   padding: 22px;
 }
+.contacto .panel:last-child {
+  display: flex;
+}
+.contacto .panel:last-child img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  flex: 1;
+}
 form {
   display: grid;
   gap: 12px;
