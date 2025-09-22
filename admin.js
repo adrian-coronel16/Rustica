@@ -295,16 +295,47 @@ const CONTENT_SECTIONS = [
   },
 ];
 
+const SECTION_LAYOUT = [
+  {
+    id: "hero",
+    slotKeys: ["hero-1", "hero-2", "hero-3"],
+  },
+  {
+    id: "destinos",
+    slotKeys: [
+      "destinos-1",
+      "destinos-2",
+      "destinos-3",
+      "destinos-4",
+      "destinos-5",
+      "destinos-6",
+    ],
+  },
+  {
+    id: "promos",
+    slotKeys: ["promo-1", "promo-2", "promo-3"],
+  },
+  {
+    id: "testimonios",
+    slotKeys: ["testimonio-1", "testimonio-2", "testimonio-3"],
+  },
+  {
+    id: "contacto",
+    slotKeys: ["contacto-panel", "footer-bg"],
+  },
+];
+
 const form = document.getElementById("imageForm");
 const libraryList = document.getElementById("libraryList");
-const slotAssignments = document.getElementById("slotAssignments");
 const messageElement = document.getElementById("formMessage");
 const fileInput = document.getElementById("imageFile");
 const urlInput = document.getElementById("imageUrl");
-const contentEditor = document.getElementById("contentEditor");
+const landingSections = document.getElementById("landingSections");
 const contentMessageElement = document.getElementById("contentMessage");
 const resetContentButton = document.getElementById("resetContentButton");
+const flowLinks = document.querySelectorAll(".flow-link[data-target]");
 const contentSaveTimers = new Map();
+const sectionHighlightTimers = new WeakMap();
 let contentMessageTimer;
 
 function loadLibrary() {
@@ -482,7 +513,7 @@ function commitContentSave(fieldKey, value) {
   if (saveContent(currentContent)) {
     if (trimmed.length === 0) {
       setContentMessage(`Se restableció el texto de "${field.label}".`, "success");
-      renderContentEditor();
+      renderLandingSections();
     } else {
       setContentMessage(`Texto guardado para "${field.label}".`, "success");
     }
@@ -517,7 +548,7 @@ function resetContentSection(sectionId) {
 
   if (saveContent(currentContent)) {
     setContentMessage(`Se restablecieron los textos de "${section.title}".`, "success");
-    renderContentEditor();
+    renderLandingSections();
   } else {
     setContentMessage("No se pudieron restablecer los textos del bloque.", "error");
   }
@@ -539,7 +570,7 @@ function resetAllContent() {
 
   if (saveContent({})) {
     setContentMessage("Todos los textos volvieron a su versión original.", "success");
-    renderContentEditor();
+    renderLandingSections();
   } else {
     setContentMessage("No se pudieron restablecer todos los textos.", "error");
   }
@@ -554,8 +585,8 @@ function readFileAsDataURL(file) {
   });
 }
 
-function renderContentEditor() {
-  if (!contentEditor) {
+function renderLandingSections() {
+  if (!landingSections) {
     return;
   }
 
@@ -564,112 +595,267 @@ function renderContentEditor() {
   });
   contentSaveTimers.clear();
 
+  const assignments = loadAssignments();
+  const library = loadLibrary();
+  const libraryMap = new Map(library.map((image) => [image.id, image]));
   const currentContent = loadContent();
-  contentEditor.innerHTML = "";
 
-  CONTENT_SECTIONS.forEach((section) => {
-    const group = document.createElement("article");
-    group.className = "content-group";
+  landingSections.innerHTML = "";
 
-    const heading = document.createElement("div");
-    heading.className = "content-group-heading";
+  SECTION_LAYOUT.forEach((sectionConfig) => {
+    const contentSection = CONTENT_SECTIONS.find((item) => item.id === sectionConfig.id);
+    const hasSlots = Array.isArray(sectionConfig.slotKeys) && sectionConfig.slotKeys.length > 0;
+    const hasContent = Boolean(contentSection?.fields?.length);
 
-    const headingBody = document.createElement("div");
-
-    const title = document.createElement("h3");
-    title.textContent = section.title;
-    headingBody.append(title);
-
-    if (section.description) {
-      const description = document.createElement("p");
-      description.className = "admin-note";
-      description.textContent = section.description;
-      headingBody.append(description);
+    if (!hasSlots && !hasContent) {
+      return;
     }
 
-    heading.append(headingBody);
+    const sectionElement = document.createElement("article");
+    sectionElement.className = "landing-section";
+    sectionElement.id = `section-${sectionConfig.id}`;
+    sectionElement.setAttribute("tabindex", "-1");
 
-    const resetButton = document.createElement("button");
-    resetButton.type = "button";
-    resetButton.className = "reset-btn";
-    resetButton.textContent = "Restablecer bloque";
-    resetButton.addEventListener("click", () => {
-      resetContentSection(section.id);
-    });
-    heading.append(resetButton);
+    const header = document.createElement("div");
+    header.className = "landing-section-header";
 
-    group.append(heading);
+    const headerBody = document.createElement("div");
 
-    const fieldsWrapper = document.createElement("div");
-    fieldsWrapper.className = "content-fields";
+    const title = document.createElement("h3");
+    title.textContent = contentSection?.title || "Sección del landing";
+    headerBody.append(title);
 
-    section.fields.forEach((field) => {
-      const fieldWrapper = document.createElement("div");
-      fieldWrapper.className = "content-field";
+    if (contentSection?.description) {
+      const description = document.createElement("p");
+      description.className = "admin-note";
+      description.textContent = contentSection.description;
+      headerBody.append(description);
+    }
 
-      const inputId = `content-${section.id}-${field.key}`;
+    header.append(headerBody);
 
-      const label = document.createElement("label");
-      label.setAttribute("for", inputId);
-      label.textContent = field.label;
-      fieldWrapper.append(label);
-
-      let helperId;
-      if (field.helper) {
-        const helper = document.createElement("small");
-        helperId = `${inputId}-helper`;
-        helper.id = helperId;
-        helper.textContent = field.helper;
-        fieldWrapper.append(helper);
-      }
-
-      const input = field.multiline
-        ? document.createElement("textarea")
-        : document.createElement("input");
-
-      if (!field.multiline) {
-        input.type = "text";
-      }
-
-      input.id = inputId;
-      input.value =
-        typeof currentContent[field.key] === "string"
-          ? currentContent[field.key]
-          : field.defaultValue;
-
-      if (field.placeholder) {
-        input.placeholder = field.placeholder;
-      }
-
-      if (field.maxLength) {
-        input.maxLength = field.maxLength;
-      }
-
-      if (field.multiline) {
-        input.rows = 3;
-      }
-
-      if (helperId) {
-        input.setAttribute("aria-describedby", helperId);
-      }
-
-      input.addEventListener("input", (event) => {
-        queueContentSave(field.key, event.target.value || "");
+    if (hasContent) {
+      const resetButton = document.createElement("button");
+      resetButton.type = "button";
+      resetButton.className = "reset-btn";
+      resetButton.textContent = "Restablecer bloque";
+      resetButton.addEventListener("click", () => {
+        resetContentSection(sectionConfig.id);
       });
+      header.append(resetButton);
+    }
 
-      input.addEventListener("blur", () => {
-        if (!input.value.trim()) {
-          queueContentSave(field.key, "");
-          input.value = field.defaultValue;
+    sectionElement.append(header);
+
+    const columns = document.createElement("div");
+    columns.className = "landing-section-columns";
+
+    if (hasSlots) {
+      const column = document.createElement("div");
+      column.className = "landing-section-column";
+
+      const columnTitle = document.createElement("h4");
+      columnTitle.textContent = contentSection
+        ? `Imágenes — ${contentSection.title}`
+        : "Imágenes del bloque";
+      column.append(columnTitle);
+
+      const slotGrid = document.createElement("div");
+      slotGrid.className = "slot-grid";
+
+      sectionConfig.slotKeys.forEach((slotKey) => {
+        const slot = IMAGE_SLOTS.find((item) => item.key === slotKey);
+        if (!slot) {
+          return;
         }
+
+        const card = document.createElement("article");
+        card.className = "slot-card shadow-soft";
+
+        const currentImage = libraryMap.get(assignments[slot.key]);
+
+        const preview = document.createElement("img");
+        preview.src = currentImage?.src || slot.defaultSrc;
+        preview.alt = currentImage?.alt || slot.defaultAlt;
+        card.append(preview);
+
+        const cardTitle = document.createElement("h3");
+        cardTitle.textContent = slot.label;
+        card.append(cardTitle);
+
+        if (slot.description) {
+          const description = document.createElement("p");
+          description.className = "slot-description";
+          description.textContent = slot.description;
+          card.append(description);
+        }
+
+        const status = document.createElement("p");
+        status.className = "slot-status";
+        status.textContent = currentImage
+          ? `Usando: ${currentImage.name}`
+          : "Usando imagen predeterminada.";
+        card.append(status);
+
+        const select = document.createElement("select");
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Usar imagen predeterminada";
+        select.append(defaultOption);
+
+        library.forEach((image) => {
+          const option = document.createElement("option");
+          option.value = image.id;
+          option.textContent = image.name;
+          select.append(option);
+        });
+
+        select.value = currentImage ? currentImage.id : "";
+        select.addEventListener("change", () => {
+          const updatedAssignments = loadAssignments();
+          if (select.value) {
+            updatedAssignments[slot.key] = select.value;
+          } else {
+            delete updatedAssignments[slot.key];
+          }
+          saveAssignments(updatedAssignments);
+          renderLandingSections();
+        });
+
+        card.append(select);
+        slotGrid.append(card);
       });
 
-      fieldsWrapper.append(fieldWrapper);
-      fieldWrapper.append(input);
-    });
+      column.append(slotGrid);
+      columns.append(column);
+    }
 
-    group.append(fieldsWrapper);
-    contentEditor.append(group);
+    if (hasContent) {
+      const column = document.createElement("div");
+      column.className = "landing-section-column";
+
+      const columnTitle = document.createElement("h4");
+      columnTitle.textContent = "Textos personalizados";
+      column.append(columnTitle);
+
+      const fieldsWrapper = document.createElement("div");
+      fieldsWrapper.className = "content-fields";
+
+      contentSection.fields.forEach((field) => {
+        const fieldWrapper = document.createElement("div");
+        fieldWrapper.className = "content-field";
+
+        const inputId = `content-${sectionConfig.id}-${field.key}`;
+
+        const label = document.createElement("label");
+        label.setAttribute("for", inputId);
+        label.textContent = field.label;
+        fieldWrapper.append(label);
+
+        let helperId;
+        if (field.helper) {
+          const helper = document.createElement("small");
+          helperId = `${inputId}-helper`;
+          helper.id = helperId;
+          helper.textContent = field.helper;
+          fieldWrapper.append(helper);
+        }
+
+        const input = field.multiline
+          ? document.createElement("textarea")
+          : document.createElement("input");
+
+        if (!field.multiline) {
+          input.type = "text";
+        }
+
+        input.id = inputId;
+        input.value =
+          typeof currentContent[field.key] === "string"
+            ? currentContent[field.key]
+            : field.defaultValue;
+
+        if (field.placeholder) {
+          input.placeholder = field.placeholder;
+        }
+
+        if (field.maxLength) {
+          input.maxLength = field.maxLength;
+        }
+
+        if (field.multiline) {
+          input.rows = 3;
+        }
+
+        if (helperId) {
+          input.setAttribute("aria-describedby", helperId);
+        }
+
+        input.addEventListener("input", (event) => {
+          queueContentSave(field.key, event.target.value || "");
+        });
+
+        input.addEventListener("blur", () => {
+          if (!input.value.trim()) {
+            queueContentSave(field.key, "");
+            input.value = field.defaultValue;
+          }
+        });
+
+        fieldWrapper.append(input);
+        fieldsWrapper.append(fieldWrapper);
+      });
+
+      column.append(fieldsWrapper);
+      columns.append(column);
+    }
+
+    sectionElement.append(columns);
+    landingSections.append(sectionElement);
+  });
+}
+
+function setupOverviewNavigation() {
+  if (!flowLinks || flowLinks.length === 0) {
+    return;
+  }
+
+  flowLinks.forEach((button) => {
+    button.addEventListener("click", () => {
+      const targetId = button.getAttribute("data-target");
+      if (!targetId) {
+        return;
+      }
+
+      const targetSection = document.getElementById(targetId);
+      if (!targetSection) {
+        return;
+      }
+
+      targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      if (typeof targetSection.focus === "function") {
+        try {
+          targetSection.focus({ preventScroll: true });
+        } catch (error) {
+          targetSection.focus();
+        }
+      }
+
+      targetSection.classList.add("is-highlighted");
+
+      const existingTimer = sectionHighlightTimers.get(targetSection);
+      if (existingTimer) {
+        window.clearTimeout(existingTimer);
+      }
+
+      const timer = window.setTimeout(() => {
+        targetSection.classList.remove("is-highlighted");
+        sectionHighlightTimers.delete(targetSection);
+      }, 1800);
+
+      sectionHighlightTimers.set(targetSection, timer);
+    });
   });
 }
 
@@ -735,76 +921,6 @@ function renderLibrary() {
   });
 }
 
-function renderSlots() {
-  if (!slotAssignments) {
-    return;
-  }
-
-  const assignments = loadAssignments();
-  const library = loadLibrary();
-  const libraryMap = new Map(library.map((image) => [image.id, image]));
-
-  slotAssignments.innerHTML = "";
-
-  IMAGE_SLOTS.forEach((slot) => {
-    const card = document.createElement("article");
-    card.className = "slot-card shadow-soft";
-
-    const currentImage = libraryMap.get(assignments[slot.key]);
-
-    const preview = document.createElement("img");
-    preview.src = currentImage?.src || slot.defaultSrc;
-    preview.alt = currentImage?.alt || slot.defaultAlt;
-    card.append(preview);
-
-    const title = document.createElement("h3");
-    title.textContent = slot.label;
-    card.append(title);
-
-    if (slot.description) {
-      const description = document.createElement("p");
-      description.className = "slot-description";
-      description.textContent = slot.description;
-      card.append(description);
-    }
-
-    const status = document.createElement("p");
-    status.className = "slot-status";
-    status.textContent = currentImage
-      ? `Usando: ${currentImage.name}`
-      : "Usando imagen predeterminada.";
-    card.append(status);
-
-    const select = document.createElement("select");
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = "Usar imagen predeterminada";
-    select.append(defaultOption);
-
-    library.forEach((image) => {
-      const option = document.createElement("option");
-      option.value = image.id;
-      option.textContent = image.name;
-      select.append(option);
-    });
-
-    select.value = currentImage ? currentImage.id : "";
-    select.addEventListener("change", () => {
-      const updatedAssignments = loadAssignments();
-      if (select.value) {
-        updatedAssignments[slot.key] = select.value;
-      } else {
-        delete updatedAssignments[slot.key];
-      }
-      saveAssignments(updatedAssignments);
-      renderSlots();
-    });
-
-    card.append(select);
-    slotAssignments.append(card);
-  });
-}
-
 function deleteImage(imageId) {
   const library = loadLibrary();
   const filtered = library.filter((image) => image.id !== imageId);
@@ -830,7 +946,7 @@ function deleteImage(imageId) {
   }
 
   renderLibrary();
-  renderSlots();
+  renderLandingSections();
 }
 
 async function handleSubmit(event) {
@@ -882,7 +998,7 @@ async function handleSubmit(event) {
   form.reset();
   setMessage("Imagen guardada en la biblioteca.", "success");
   renderLibrary();
-  renderSlots();
+  renderLandingSections();
 }
 
 if (form) {
@@ -907,5 +1023,5 @@ if (resetContentButton) {
 }
 
 renderLibrary();
-renderSlots();
-renderContentEditor();
+renderLandingSections();
+setupOverviewNavigation();
