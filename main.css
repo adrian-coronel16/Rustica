@@ -117,6 +117,10 @@ nav ul {
   margin: 0;
   padding: 0;
 }
+nav a.active {
+  color: var(--blue);
+  font-weight: 700;
+}
 .menu-btn {
   display: none;
   border: 0;
@@ -334,6 +338,133 @@ textarea {
   min-height: 120px;
 }
 
+/* Administrador de imágenes */
+.admin-main {
+  padding: 120px 0 80px;
+}
+.admin-main .title {
+  margin-bottom: 8px;
+}
+.admin-note {
+  font-size: 0.9rem;
+  color: #475569;
+}
+.admin-layout {
+  display: grid;
+  gap: 24px;
+  margin-top: 32px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.admin-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+}
+.form-group {
+  display: grid;
+  gap: 10px;
+}
+.form-group.inline {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.form-message {
+  font-size: 0.85rem;
+  color: #475569;
+}
+.form-message.success {
+  color: #15803d;
+}
+.form-message.error {
+  color: #b91c1c;
+}
+.library-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.library-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  display: grid;
+}
+.library-card img {
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+}
+.library-card .library-body {
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+.library-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.library-card .small {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #475569;
+}
+.library-card .library-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px 16px;
+}
+.delete-btn {
+  border: 0;
+  background: rgba(237, 7, 71, 0.12);
+  color: var(--fuchsia);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.delete-btn:hover {
+  background: rgba(237, 7, 71, 0.18);
+}
+.slot-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.slot-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+.slot-card img {
+  width: 100%;
+  border-radius: 14px;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+.slot-card h3 {
+  margin: 0;
+}
+.slot-description {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+.slot-status {
+  font-size: 0.85rem;
+  color: #475569;
+}
+.slot-card select {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #d4d4d8;
+  font-family: inherit;
+}
+
 /* Footer con imagen */
 footer {
   position: relative;
@@ -358,6 +489,9 @@ footer .inner {
 /* Responsivo */
 @media (max-width: 960px) {
   .contacto {
+    grid-template-columns: 1fr;
+  }
+  .admin-layout {
     grid-template-columns: 1fr;
   }
   nav ul {
