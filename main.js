@@ -9,6 +9,7 @@ if (yearElement) {
 // Gestión de imágenes personalizables
 const LIBRARY_STORAGE_KEY = "rusticaImageLibrary";
 const ASSIGNMENTS_STORAGE_KEY = "rusticaImageAssignments";
+const CONTENT_STORAGE_KEY = "rusticaContentSettings";
 
 function loadLibraryFromStorage() {
   try {
@@ -34,6 +35,20 @@ function loadAssignmentsFromStorage() {
     return parsed && typeof parsed === "object" ? parsed : {};
   } catch (error) {
     console.warn("No se pudieron cargar las asignaciones de imágenes.", error);
+    return {};
+  }
+}
+
+function loadContentFromStorage() {
+  try {
+    const stored = localStorage.getItem(CONTENT_STORAGE_KEY);
+    if (!stored) {
+      return {};
+    }
+    const parsed = JSON.parse(stored);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    console.warn("No se pudieron cargar los textos personalizados.", error);
     return {};
   }
 }
@@ -64,6 +79,35 @@ function applyManagedImages() {
 }
 
 applyManagedImages();
+applyManagedContent();
+
+function applyManagedContent() {
+  const contentSettings = loadContentFromStorage();
+
+  document.querySelectorAll("[data-content-key]").forEach((element) => {
+    const key = element.dataset.contentKey;
+    if (!key) {
+      return;
+    }
+
+    const defaultContent =
+      element.dataset.defaultContent !== undefined
+        ? element.dataset.defaultContent
+        : element.textContent;
+
+    const storedValue = contentSettings[key];
+    const valueToUse =
+      typeof storedValue === "string" && storedValue.trim().length > 0
+        ? storedValue
+        : defaultContent || "";
+
+    element.textContent = valueToUse;
+
+    if (element instanceof HTMLAnchorElement) {
+      element.setAttribute("aria-label", valueToUse);
+    }
+  });
+}
 
 // Slider simple y ligero
 const slides = document.querySelectorAll(".slide");
