@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rustica Travel — Administrador de imágenes</title>
+    <meta
+      name="description"
+      content="Gestiona la biblioteca de imágenes que se muestran en el landing page de Rustica Travel."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <header>
+      <div class="container nav">
+        <a href="index.html" class="brand" aria-label="Rustica Travel">
+          <span class="dot"></span>
+          <span>Rustica <span style="color: var(--sand)">Travel</span></span>
+        </a>
+        <nav id="nav">
+          <button
+            class="menu-btn"
+            aria-label="Abrir menú"
+            onclick="document.getElementById('nav').classList.toggle('open')"
+          >
+            ☰
+          </button>
+          <ul>
+            <li><a href="index.html">Ver landing</a></li>
+            <li>
+              <a href="admin.html" class="active" aria-current="page"
+                >Administrador de imágenes</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <div class="container">
+        <h1 class="title">Administrador de imágenes</h1>
+        <p class="subtitle">
+          Controla la biblioteca visual que alimenta el landing page de Rustica Travel.
+        </p>
+        <p class="admin-note">
+          Las imágenes y sus asignaciones se guardan de manera local en tu navegador mediante
+          <strong>localStorage</strong>. Si accedes desde otro dispositivo necesitarás configurarlas
+          nuevamente.
+        </p>
+
+        <div class="admin-layout">
+          <section class="admin-card shadow-soft">
+            <h2>Agregar nueva imagen</h2>
+            <p class="admin-note">
+              Sube un archivo (se convertirá en un recurso base64) o pega un enlace público. El texto
+              alternativo se utilizará para describir la imagen en el sitio.
+            </p>
+            <form id="imageForm">
+              <div class="form-group">
+                <label for="imageName">Nombre de referencia</label>
+                <input
+                  type="text"
+                  id="imageName"
+                  name="imageName"
+                  placeholder="Ej. Playa secreta"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="imageAlt">Texto alternativo</label>
+                <input
+                  type="text"
+                  id="imageAlt"
+                  name="imageAlt"
+                  placeholder="Describe el contenido de la imagen"
+                  required
+                />
+              </div>
+              <div class="form-group inline">
+                <div class="form-group">
+                  <label for="imageFile">Subir archivo</label>
+                  <input type="file" id="imageFile" name="imageFile" accept="image/*" />
+                </div>
+                <div class="form-group">
+                  <label for="imageUrl">O pegar URL pública</label>
+                  <input type="url" id="imageUrl" name="imageUrl" placeholder="https://..." />
+                </div>
+              </div>
+              <p class="admin-note">Si completas ambas opciones se priorizará el archivo cargado.</p>
+              <button class="btn btn-primary" type="submit">Guardar en la biblioteca</button>
+              <p class="form-message" id="formMessage" aria-live="polite"></p>
+            </form>
+          </section>
+
+          <section class="admin-card shadow-soft">
+            <h2>Biblioteca disponible</h2>
+            <p class="admin-note">
+              Visualiza todas las imágenes personalizadas y elimina las que ya no utilices.
+            </p>
+            <div id="libraryList" class="library-grid" aria-live="polite"></div>
+          </section>
+        </div>
+
+        <section class="admin-card shadow-soft" style="margin-top: 32px">
+          <h2>Asignar imágenes al sitio</h2>
+          <p class="admin-note">
+            Selecciona qué imagen debe mostrarse en cada sección del landing. Al dejar la opción
+            predeterminada se conservará la fotografía original del diseño.
+          </p>
+          <div id="slotAssignments" class="slot-grid" aria-live="polite"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
