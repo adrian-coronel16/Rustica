@@ -1,5 +1,6 @@
 const LIBRARY_STORAGE_KEY = "rusticaImageLibrary";
 const ASSIGNMENTS_STORAGE_KEY = "rusticaImageAssignments";
+const CONTENT_STORAGE_KEY = "rusticaContentSettings";
 
 const IMAGE_SLOTS = [
   {
@@ -140,12 +141,171 @@ const IMAGE_SLOTS = [
   },
 ];
 
+const CONTENT_SECTIONS = [
+  {
+    id: "hero",
+    title: "Hero de portada",
+    description: "Texto principal del slider y botones de acción.",
+    fields: [
+      {
+        key: "heroTitleLeading",
+        label: "Título principal (inicio)",
+        placeholder: "Tu viaje soñado",
+        defaultValue: "Tu viaje soñado",
+        helper: "Se muestra al inicio del gran titular del hero.",
+        maxLength: 60,
+      },
+      {
+        key: "heroTitleAccent",
+        label: "Título principal (resaltado)",
+        placeholder: "empieza aquí",
+        defaultValue: "empieza aquí",
+        helper: "Palabra o frase destacada en color arena.",
+        maxLength: 60,
+      },
+      {
+        key: "heroSubtitle",
+        label: "Descripción corta",
+        multiline: true,
+        defaultValue:
+          "Ofertas, destinos y salidas confirmadas. ¡Vuela con nosotros a tu próxima aventura!",
+        helper: "Mensaje que aparece debajo del título principal.",
+        maxLength: 220,
+      },
+      {
+        key: "heroSecondaryCta",
+        label: "Botón secundario",
+        placeholder: "Ver promociones",
+        defaultValue: "Ver promociones",
+        helper: "Texto del botón fucsia que dirige a la sección de promociones.",
+        maxLength: 40,
+      },
+      {
+        key: "heroPrimaryCta",
+        label: "Botón principal",
+        placeholder: "Solicitar cotización",
+        defaultValue: "Solicitar cotización",
+        helper: "Texto del botón azul que lleva al formulario de contacto.",
+        maxLength: 40,
+      },
+    ],
+  },
+  {
+    id: "destinos",
+    title: "Destinos destacados",
+    description: "Encabezado del mosaico de seis destinos inspiradores.",
+    fields: [
+      {
+        key: "destinationsTitle",
+        label: "Título de sección",
+        defaultValue: "Destinos destacados",
+        placeholder: "Destinos destacados",
+        helper: "Encabezado principal sobre el mosaico de destinos.",
+        maxLength: 70,
+      },
+      {
+        key: "destinationsSubtitle",
+        label: "Descripción",
+        multiline: true,
+        defaultValue:
+          "Imágenes grandes para inspirarte. Explora playas, ciudades icónicas y experiencias inolvidables.",
+        helper: "Texto que introduce el mosaico de destinos destacados.",
+        maxLength: 260,
+      },
+    ],
+  },
+  {
+    id: "promos",
+    title: "Promociones activas",
+    description: "Encabezado y botón que acompañan a las tarjetas de ofertas.",
+    fields: [
+      {
+        key: "promosTitle",
+        label: "Título de sección",
+        defaultValue: "Promociones activas",
+        placeholder: "Promociones activas",
+        helper: "Encabezado principal sobre las ofertas disponibles.",
+        maxLength: 70,
+      },
+      {
+        key: "promosSubtitle",
+        label: "Descripción",
+        multiline: true,
+        defaultValue:
+          "Actualizamos constantemente las mejores ofertas. El color fucsia destaca oportunidades limitadas.",
+        helper: "Texto que explica cómo se actualizan las promociones.",
+        maxLength: 260,
+      },
+      {
+        key: "promosButton",
+        label: "Texto del botón",
+        placeholder: "Quiero esta oferta",
+        defaultValue: "Quiero esta oferta",
+        helper: "Botón que conecta directamente con la sección de contacto.",
+        maxLength: 40,
+      },
+    ],
+  },
+  {
+    id: "testimonios",
+    title: "Historias que inspiran",
+    description: "Textos que acompañan la galería de testimonios.",
+    fields: [
+      {
+        key: "testimonialsTitle",
+        label: "Título de sección",
+        defaultValue: "Historias que inspiran",
+        placeholder: "Historias que inspiran",
+        helper: "Encabezado principal de la sección de testimonios.",
+        maxLength: 70,
+      },
+      {
+        key: "testimonialsSubtitle",
+        label: "Descripción",
+        multiline: true,
+        defaultValue: "Clientes reales en sus destinos favoritos.",
+        helper: "Frase breve bajo el título de testimonios.",
+        maxLength: 160,
+      },
+    ],
+  },
+  {
+    id: "contacto",
+    title: "Contacto y cierre",
+    description: "Mensajes del formulario de cotización final.",
+    fields: [
+      {
+        key: "contactTitle",
+        label: "Título del formulario",
+        defaultValue: "Solicita tu cotización",
+        placeholder: "Solicita tu cotización",
+        helper: "Encabezado que invita a completar el formulario de contacto.",
+        maxLength: 70,
+      },
+      {
+        key: "contactSubtitle",
+        label: "Descripción",
+        multiline: true,
+        defaultValue:
+          "Cuéntanos a dónde quieres ir y te enviamos la mejor propuesta.",
+        helper: "Mensaje que refuerza la acción del formulario.",
+        maxLength: 220,
+      },
+    ],
+  },
+];
+
 const form = document.getElementById("imageForm");
 const libraryList = document.getElementById("libraryList");
 const slotAssignments = document.getElementById("slotAssignments");
 const messageElement = document.getElementById("formMessage");
 const fileInput = document.getElementById("imageFile");
 const urlInput = document.getElementById("imageUrl");
+const contentEditor = document.getElementById("contentEditor");
+const contentMessageElement = document.getElementById("contentMessage");
+const resetContentButton = document.getElementById("resetContentButton");
+const contentSaveTimers = new Map();
+let contentMessageTimer;
 
 function loadLibrary() {
   try {
@@ -199,6 +359,39 @@ function saveAssignments(assignments) {
   }
 }
 
+function loadContent() {
+  try {
+    const stored = localStorage.getItem(CONTENT_STORAGE_KEY);
+    if (!stored) {
+      return {};
+    }
+    const parsed = JSON.parse(stored);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    console.error("No se pudieron cargar los textos personalizados.", error);
+    return {};
+  }
+}
+
+function saveContent(content) {
+  try {
+    const entries = content && typeof content === "object" ? Object.keys(content) : [];
+    if (entries.length === 0) {
+      localStorage.removeItem(CONTENT_STORAGE_KEY);
+    } else {
+      localStorage.setItem(CONTENT_STORAGE_KEY, JSON.stringify(content));
+    }
+    return true;
+  } catch (error) {
+    console.error("No se pudo guardar el contenido personalizado.", error);
+    setContentMessage(
+      "No se pudo guardar el contenido en este navegador. Verifica el espacio disponible.",
+      "error"
+    );
+    return false;
+  }
+}
+
 function setMessage(text, type) {
   if (!messageElement) {
     return;
@@ -210,12 +403,273 @@ function setMessage(text, type) {
   }
 }
 
+function setContentMessage(text, type) {
+  if (!contentMessageElement) {
+    return;
+  }
+  if (contentMessageTimer) {
+    window.clearTimeout(contentMessageTimer);
+    contentMessageTimer = undefined;
+  }
+  contentMessageElement.textContent = text;
+  contentMessageElement.classList.remove("success", "error");
+  if (type) {
+    contentMessageElement.classList.add(type);
+  }
+  if (text) {
+    const timeout = type === "error" ? 5000 : 3200;
+    contentMessageTimer = window.setTimeout(() => {
+      if (!contentMessageElement) {
+        return;
+      }
+      contentMessageElement.textContent = "";
+      contentMessageElement.classList.remove("success", "error");
+      contentMessageTimer = undefined;
+    }, timeout);
+  }
+}
+
+function findContentFieldByKey(fieldKey) {
+  for (const section of CONTENT_SECTIONS) {
+    const field = section.fields.find((item) => item.key === fieldKey);
+    if (field) {
+      return { section, field };
+    }
+  }
+  return { section: undefined, field: undefined };
+}
+
+function queueContentSave(fieldKey, value) {
+  if (!fieldKey) {
+    return;
+  }
+  const key = String(fieldKey);
+  const stringValue = typeof value === "string" ? value : String(value ?? "");
+  if (contentSaveTimers.has(key)) {
+    window.clearTimeout(contentSaveTimers.get(key));
+  }
+  const timer = window.setTimeout(() => {
+    contentSaveTimers.delete(key);
+    commitContentSave(key, stringValue);
+  }, 400);
+  contentSaveTimers.set(key, timer);
+}
+
+function commitContentSave(fieldKey, value) {
+  const { field } = findContentFieldByKey(fieldKey);
+  if (!field) {
+    return;
+  }
+
+  const currentContent = loadContent();
+  const trimmed = value.trim();
+  let updated = false;
+
+  if (trimmed.length === 0) {
+    if (Object.prototype.hasOwnProperty.call(currentContent, fieldKey)) {
+      delete currentContent[fieldKey];
+      updated = true;
+    }
+  } else if (currentContent[fieldKey] !== value) {
+    currentContent[fieldKey] = value;
+    updated = true;
+  }
+
+  if (!updated) {
+    return;
+  }
+
+  if (saveContent(currentContent)) {
+    if (trimmed.length === 0) {
+      setContentMessage(`Se restableció el texto de "${field.label}".`, "success");
+      renderContentEditor();
+    } else {
+      setContentMessage(`Texto guardado para "${field.label}".`, "success");
+    }
+  } else {
+    setContentMessage("No se pudo guardar el texto actualizado.", "error");
+  }
+}
+
+function resetContentSection(sectionId) {
+  const section = CONTENT_SECTIONS.find((item) => item.id === sectionId);
+  if (!section) {
+    return;
+  }
+
+  const currentContent = loadContent();
+  let changed = false;
+
+  section.fields.forEach((field) => {
+    if (Object.prototype.hasOwnProperty.call(currentContent, field.key)) {
+      delete currentContent[field.key];
+      changed = true;
+    }
+  });
+
+  if (!changed) {
+    setContentMessage(
+      `El bloque "${section.title}" ya usa los textos predeterminados.`,
+      ""
+    );
+    return;
+  }
+
+  if (saveContent(currentContent)) {
+    setContentMessage(`Se restablecieron los textos de "${section.title}".`, "success");
+    renderContentEditor();
+  } else {
+    setContentMessage("No se pudieron restablecer los textos del bloque.", "error");
+  }
+}
+
+function resetAllContent() {
+  const currentContent = loadContent();
+  if (Object.keys(currentContent).length === 0) {
+    setContentMessage("Aún no hay textos personalizados para restablecer.", "");
+    return;
+  }
+
+  const confirmReset = window.confirm(
+    "¿Restablecer todos los textos personalizados del landing page?"
+  );
+  if (!confirmReset) {
+    return;
+  }
+
+  if (saveContent({})) {
+    setContentMessage("Todos los textos volvieron a su versión original.", "success");
+    renderContentEditor();
+  } else {
+    setContentMessage("No se pudieron restablecer todos los textos.", "error");
+  }
+}
+
 function readFileAsDataURL(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = () => reject(new Error("No se pudo leer el archivo"));
     reader.readAsDataURL(file);
+  });
+}
+
+function renderContentEditor() {
+  if (!contentEditor) {
+    return;
+  }
+
+  contentSaveTimers.forEach((timer) => {
+    window.clearTimeout(timer);
+  });
+  contentSaveTimers.clear();
+
+  const currentContent = loadContent();
+  contentEditor.innerHTML = "";
+
+  CONTENT_SECTIONS.forEach((section) => {
+    const group = document.createElement("article");
+    group.className = "content-group";
+
+    const heading = document.createElement("div");
+    heading.className = "content-group-heading";
+
+    const headingBody = document.createElement("div");
+
+    const title = document.createElement("h3");
+    title.textContent = section.title;
+    headingBody.append(title);
+
+    if (section.description) {
+      const description = document.createElement("p");
+      description.className = "admin-note";
+      description.textContent = section.description;
+      headingBody.append(description);
+    }
+
+    heading.append(headingBody);
+
+    const resetButton = document.createElement("button");
+    resetButton.type = "button";
+    resetButton.className = "reset-btn";
+    resetButton.textContent = "Restablecer bloque";
+    resetButton.addEventListener("click", () => {
+      resetContentSection(section.id);
+    });
+    heading.append(resetButton);
+
+    group.append(heading);
+
+    const fieldsWrapper = document.createElement("div");
+    fieldsWrapper.className = "content-fields";
+
+    section.fields.forEach((field) => {
+      const fieldWrapper = document.createElement("div");
+      fieldWrapper.className = "content-field";
+
+      const inputId = `content-${section.id}-${field.key}`;
+
+      const label = document.createElement("label");
+      label.setAttribute("for", inputId);
+      label.textContent = field.label;
+      fieldWrapper.append(label);
+
+      let helperId;
+      if (field.helper) {
+        const helper = document.createElement("small");
+        helperId = `${inputId}-helper`;
+        helper.id = helperId;
+        helper.textContent = field.helper;
+        fieldWrapper.append(helper);
+      }
+
+      const input = field.multiline
+        ? document.createElement("textarea")
+        : document.createElement("input");
+
+      if (!field.multiline) {
+        input.type = "text";
+      }
+
+      input.id = inputId;
+      input.value =
+        typeof currentContent[field.key] === "string"
+          ? currentContent[field.key]
+          : field.defaultValue;
+
+      if (field.placeholder) {
+        input.placeholder = field.placeholder;
+      }
+
+      if (field.maxLength) {
+        input.maxLength = field.maxLength;
+      }
+
+      if (field.multiline) {
+        input.rows = 3;
+      }
+
+      if (helperId) {
+        input.setAttribute("aria-describedby", helperId);
+      }
+
+      input.addEventListener("input", (event) => {
+        queueContentSave(field.key, event.target.value || "");
+      });
+
+      input.addEventListener("blur", () => {
+        if (!input.value.trim()) {
+          queueContentSave(field.key, "");
+          input.value = field.defaultValue;
+        }
+      });
+
+      fieldsWrapper.append(fieldWrapper);
+      fieldWrapper.append(input);
+    });
+
+    group.append(fieldsWrapper);
+    contentEditor.append(group);
   });
 }
 
@@ -448,5 +902,10 @@ if (fileInput && urlInput) {
   });
 }
 
+if (resetContentButton) {
+  resetContentButton.addEventListener("click", resetAllContent);
+}
+
 renderLibrary();
 renderSlots();
+renderContentEditor();

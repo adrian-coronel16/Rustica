@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Rustica Travel — Administrador de imágenes</title>
+    <title>Rustica Travel — Panel de personalización</title>
     <meta
       name="description"
-      content="Gestiona la biblioteca de imágenes que se muestran en el landing page de Rustica Travel."
+      content="Gestiona la biblioteca visual y los textos destacados del landing page de Rustica Travel."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -45,77 +45,153 @@
 
     <main class="admin-main">
       <div class="container">
-        <h1 class="title">Administrador de imágenes</h1>
+        <h1 class="title">Panel de personalización</h1>
         <p class="subtitle">
-          Controla la biblioteca visual que alimenta el landing page de Rustica Travel.
+          Administra los recursos visuales y los textos principales que componen el flujo del landing
+          page de Rustica Travel.
         </p>
         <p class="admin-note">
-          Las imágenes y sus asignaciones se guardan de manera local en tu navegador mediante
-          <strong>localStorage</strong>. Si accedes desde otro dispositivo necesitarás configurarlas
-          nuevamente.
+          Las imágenes, asignaciones y textos personalizados se guardan de manera local en tu
+          navegador mediante <strong>localStorage</strong>. Si accedes desde otro dispositivo
+          necesitarás configurarlos nuevamente.
         </p>
 
-        <div class="admin-layout">
-          <section class="admin-card shadow-soft">
-            <h2>Agregar nueva imagen</h2>
+        <div class="admin-shell">
+          <aside class="admin-overview shadow-soft" aria-label="Mapa visual del landing page">
+            <h2>Mapa del landing</h2>
             <p class="admin-note">
-              Sube un archivo (se convertirá en un recurso base64) o pega un enlace público. El texto
-              alternativo se utilizará para describir la imagen en el sitio.
+              Sigue el orden sugerido para comprender cómo se arma la página y qué controla cada
+              sección del administrador.
             </p>
-            <form id="imageForm">
-              <div class="form-group">
-                <label for="imageName">Nombre de referencia</label>
-                <input
-                  type="text"
-                  id="imageName"
-                  name="imageName"
-                  placeholder="Ej. Playa secreta"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="imageAlt">Texto alternativo</label>
-                <input
-                  type="text"
-                  id="imageAlt"
-                  name="imageAlt"
-                  placeholder="Describe el contenido de la imagen"
-                  required
-                />
-              </div>
-              <div class="form-group inline">
-                <div class="form-group">
-                  <label for="imageFile">Subir archivo</label>
-                  <input type="file" id="imageFile" name="imageFile" accept="image/*" />
+            <ol class="flow-list">
+              <li>
+                <span class="flow-step">1</span>
+                <div>
+                  <h3>Hero de portada</h3>
+                  <p>Slider con grandes imágenes y los llamados a la acción principales.</p>
                 </div>
-                <div class="form-group">
-                  <label for="imageUrl">O pegar URL pública</label>
-                  <input type="url" id="imageUrl" name="imageUrl" placeholder="https://..." />
+              </li>
+              <li>
+                <span class="flow-step">2</span>
+                <div>
+                  <h3>Destinos destacados</h3>
+                  <p>Mosaico con seis experiencias inspiradoras para descubrir.</p>
                 </div>
-              </div>
-              <p class="admin-note">Si completas ambas opciones se priorizará el archivo cargado.</p>
-              <button class="btn btn-primary" type="submit">Guardar en la biblioteca</button>
-              <p class="form-message" id="formMessage" aria-live="polite"></p>
-            </form>
-          </section>
+              </li>
+              <li>
+                <span class="flow-step">3</span>
+                <div>
+                  <h3>Promociones activas</h3>
+                  <p>Tarjetas de ofertas con botón directo a la sección de contacto.</p>
+                </div>
+              </li>
+              <li>
+                <span class="flow-step">4</span>
+                <div>
+                  <h3>Historias que inspiran</h3>
+                  <p>Testimonios reales respaldados por fotografías de clientes.</p>
+                </div>
+              </li>
+              <li>
+                <span class="flow-step">5</span>
+                <div>
+                  <h3>Contacto y cierre</h3>
+                  <p>Formulario de cotización y una imagen final que refuerza la marca.</p>
+                </div>
+              </li>
+            </ol>
+            <div class="overview-footnote">
+              Consejo: personaliza primero tu biblioteca, luego asigna las imágenes y finalmente ajusta
+              los títulos y mensajes para contar mejor tu historia.
+            </div>
+          </aside>
 
-          <section class="admin-card shadow-soft">
-            <h2>Biblioteca disponible</h2>
-            <p class="admin-note">
-              Visualiza todas las imágenes personalizadas y elimina las que ya no utilices.
-            </p>
-            <div id="libraryList" class="library-grid" aria-live="polite"></div>
-          </section>
+          <div class="admin-content">
+            <div class="admin-layout">
+              <section class="admin-card shadow-soft">
+                <h2>Agregar nueva imagen</h2>
+                <p class="admin-note">
+                  Sube un archivo (se convertirá en un recurso base64) o pega un enlace público. El
+                  texto alternativo se utilizará para describir la imagen en el sitio.
+                </p>
+                <form id="imageForm">
+                  <div class="form-group">
+                    <label for="imageName">Nombre de referencia</label>
+                    <input
+                      type="text"
+                      id="imageName"
+                      name="imageName"
+                      placeholder="Ej. Playa secreta"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="imageAlt">Texto alternativo</label>
+                    <input
+                      type="text"
+                      id="imageAlt"
+                      name="imageAlt"
+                      placeholder="Describe el contenido de la imagen"
+                      required
+                    />
+                  </div>
+                  <div class="form-group inline">
+                    <div class="form-group">
+                      <label for="imageFile">Subir archivo</label>
+                      <input type="file" id="imageFile" name="imageFile" accept="image/*" />
+                    </div>
+                    <div class="form-group">
+                      <label for="imageUrl">O pegar URL pública</label>
+                      <input type="url" id="imageUrl" name="imageUrl" placeholder="https://..." />
+                    </div>
+                  </div>
+                  <p class="admin-note">Si completas ambas opciones se priorizará el archivo cargado.</p>
+                  <button class="btn btn-primary" type="submit">Guardar en la biblioteca</button>
+                  <p class="form-message" id="formMessage" aria-live="polite"></p>
+                </form>
+              </section>
+
+              <section class="admin-card shadow-soft">
+                <h2>Biblioteca disponible</h2>
+                <p class="admin-note">
+                  Visualiza todas las imágenes personalizadas y elimina las que ya no utilices.
+                </p>
+                <div id="libraryList" class="library-grid" aria-live="polite"></div>
+              </section>
+            </div>
+
+            <section class="admin-card shadow-soft">
+              <div class="section-heading">
+                <div>
+                  <h2>Asignar imágenes al sitio</h2>
+                  <p class="admin-note">
+                    Selecciona qué imagen debe mostrarse en cada sección del landing. Al dejar la opción
+                    predeterminada se conservará la fotografía original del diseño.
+                  </p>
+                </div>
+                <a class="btn btn-secondary" href="index.html">Ver landing</a>
+              </div>
+              <div id="slotAssignments" class="slot-grid" aria-live="polite"></div>
+            </section>
+
+            <section class="admin-card shadow-soft content-card">
+              <div class="section-heading">
+                <div>
+                  <h2>Personaliza textos y títulos</h2>
+                  <p class="admin-note">
+                    Ajusta los encabezados y mensajes principales para que reflejen la voz de tu marca.
+                    Los cambios se aplican inmediatamente en el landing.
+                  </p>
+                </div>
+                <button class="btn btn-secondary" type="button" id="resetContentButton">
+                  Restablecer todos los textos
+                </button>
+              </div>
+              <p class="form-message" id="contentMessage" aria-live="polite"></p>
+              <div id="contentEditor" class="content-grid"></div>
+            </section>
+          </div>
         </div>
-
-        <section class="admin-card shadow-soft" style="margin-top: 32px">
-          <h2>Asignar imágenes al sitio</h2>
-          <p class="admin-note">
-            Selecciona qué imagen debe mostrarse en cada sección del landing. Al dejar la opción
-            predeterminada se conservará la fotografía original del diseño.
-          </p>
-          <div id="slotAssignments" class="slot-grid" aria-live="polite"></div>
-        </section>
       </div>
     </main>
 
