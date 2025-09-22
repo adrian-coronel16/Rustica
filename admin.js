@@ -650,89 +650,10 @@ function renderLandingSections() {
     const columns = document.createElement("div");
     columns.className = "landing-section-columns";
 
-    if (hasSlots) {
-      const column = document.createElement("div");
-      column.className = "landing-section-column";
-
-      const columnTitle = document.createElement("h4");
-      columnTitle.textContent = contentSection
-        ? `Imágenes — ${contentSection.title}`
-        : "Imágenes del bloque";
-      column.append(columnTitle);
-
-      const slotGrid = document.createElement("div");
-      slotGrid.className = "slot-grid";
-
-      sectionConfig.slotKeys.forEach((slotKey) => {
-        const slot = IMAGE_SLOTS.find((item) => item.key === slotKey);
-        if (!slot) {
-          return;
-        }
-
-        const card = document.createElement("article");
-        card.className = "slot-card shadow-soft";
-
-        const currentImage = libraryMap.get(assignments[slot.key]);
-
-        const preview = document.createElement("img");
-        preview.src = currentImage?.src || slot.defaultSrc;
-        preview.alt = currentImage?.alt || slot.defaultAlt;
-        card.append(preview);
-
-        const cardTitle = document.createElement("h3");
-        cardTitle.textContent = slot.label;
-        card.append(cardTitle);
-
-        if (slot.description) {
-          const description = document.createElement("p");
-          description.className = "slot-description";
-          description.textContent = slot.description;
-          card.append(description);
-        }
-
-        const status = document.createElement("p");
-        status.className = "slot-status";
-        status.textContent = currentImage
-          ? `Usando: ${currentImage.name}`
-          : "Usando imagen predeterminada.";
-        card.append(status);
-
-        const select = document.createElement("select");
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.textContent = "Usar imagen predeterminada";
-        select.append(defaultOption);
-
-        library.forEach((image) => {
-          const option = document.createElement("option");
-          option.value = image.id;
-          option.textContent = image.name;
-          select.append(option);
-        });
-
-        select.value = currentImage ? currentImage.id : "";
-        select.addEventListener("change", () => {
-          const updatedAssignments = loadAssignments();
-          if (select.value) {
-            updatedAssignments[slot.key] = select.value;
-          } else {
-            delete updatedAssignments[slot.key];
-          }
-          saveAssignments(updatedAssignments);
-          renderLandingSections();
-        });
-
-        card.append(select);
-        slotGrid.append(card);
-      });
-
-      column.append(slotGrid);
-      columns.append(column);
-    }
-
     if (hasContent) {
       const column = document.createElement("div");
-      column.className = "landing-section-column";
+      column.className =
+        "landing-section-column landing-section-column--content";
 
       const columnTitle = document.createElement("h4");
       columnTitle.textContent = "Textos personalizados";
@@ -807,6 +728,87 @@ function renderLandingSections() {
       });
 
       column.append(fieldsWrapper);
+      columns.append(column);
+    }
+
+    if (hasSlots) {
+      const column = document.createElement("div");
+      column.className =
+        "landing-section-column landing-section-column--media";
+
+      const columnTitle = document.createElement("h4");
+      columnTitle.textContent = contentSection
+        ? `Imágenes — ${contentSection.title}`
+        : "Imágenes del bloque";
+      column.append(columnTitle);
+
+      const slotGrid = document.createElement("div");
+      slotGrid.className = "slot-grid";
+
+      sectionConfig.slotKeys.forEach((slotKey) => {
+        const slot = IMAGE_SLOTS.find((item) => item.key === slotKey);
+        if (!slot) {
+          return;
+        }
+
+        const card = document.createElement("article");
+        card.className = "slot-card shadow-soft";
+
+        const currentImage = libraryMap.get(assignments[slot.key]);
+
+        const preview = document.createElement("img");
+        preview.src = currentImage?.src || slot.defaultSrc;
+        preview.alt = currentImage?.alt || slot.defaultAlt;
+        card.append(preview);
+
+        const cardTitle = document.createElement("h3");
+        cardTitle.textContent = slot.label;
+        card.append(cardTitle);
+
+        if (slot.description) {
+          const description = document.createElement("p");
+          description.className = "slot-description";
+          description.textContent = slot.description;
+          card.append(description);
+        }
+
+        const status = document.createElement("p");
+        status.className = "slot-status";
+        status.textContent = currentImage
+          ? `Usando: ${currentImage.name}`
+          : "Usando imagen predeterminada.";
+        card.append(status);
+
+        const select = document.createElement("select");
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Usar imagen predeterminada";
+        select.append(defaultOption);
+
+        library.forEach((image) => {
+          const option = document.createElement("option");
+          option.value = image.id;
+          option.textContent = image.name;
+          select.append(option);
+        });
+
+        select.value = currentImage ? currentImage.id : "";
+        select.addEventListener("change", () => {
+          const updatedAssignments = loadAssignments();
+          if (select.value) {
+            updatedAssignments[slot.key] = select.value;
+          } else {
+            delete updatedAssignments[slot.key];
+          }
+          saveAssignments(updatedAssignments);
+          renderLandingSections();
+        });
+
+        card.append(select);
+        slotGrid.append(card);
+      });
+
+      column.append(slotGrid);
       columns.append(column);
     }
 
