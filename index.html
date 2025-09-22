@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rustica Travel — Tu viaje soñado</title>
+    <meta
+      name="description"
+      content="Landing page de una agencia de viajes con foco en imágenes, destinos destacados y promociones."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <header>
+      <div class="container nav">
+        <a href="#" class="brand" aria-label="Rustica Travel">
+          <span class="dot"></span>
+          <span>Rustica <span style="color: var(--sand)">Travel</span></span>
+        </a>
+        <nav id="nav">
+          <button
+            class="menu-btn"
+            aria-label="Abrir menú"
+            onclick="document.getElementById('nav').classList.toggle('open')"
+          >
+            ☰
+          </button>
+          <ul>
+            <li><a href="#destinos">Destinos</a></li>
+            <li><a href="#promos">Promociones</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- HERO SLIDER (IMÁGENES A PANTALLA COMPLETA) -->
+    <section class="hero" aria-label="Portada con destinos">
+      <div class="slides" id="slides">
+        <div class="slide">
+          <img
+            src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?q=80&w=2000&auto=format&fit=crop"
+            alt="Playa turquesa"
+          />
+        </div>
+        <div class="slide">
+          <img
+            src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2000&auto=format&fit=crop"
+            alt="Ciudad europea al atardecer"
+          />
+        </div>
+        <div class="slide">
+          <img
+            src="https://images.unsplash.com/photo-1483683804023-6ccdb62f86ef?q=80&w=2000&auto=format&fit=crop"
+            alt="Montañas y lago"
+          />
+        </div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-box">
+          <h1>
+            Tu viaje soñado <span style="color: var(--sand)">empieza aquí</span>
+          </h1>
+          <p>
+            Ofertas, destinos y salidas confirmadas. ¡Vuela con nosotros a tu
+            próxima aventura!
+          </p>
+          <div class="hero-ctas">
+            <a href="#promos" class="btn btn-accent">Ver promociones</a>
+            <a
+              href="#contacto"
+              class="btn btn-primary"
+              style="background: var(--blue)"
+              >Solicitar cotización</a
+            >
+          </div>
+        </div>
+      </div>
+      <div class="indicator" aria-hidden="true">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </section>
+
+    <!-- DESTINOS DESTACADOS (MOSAICO DE IMÁGENES) -->
+    <section class="section" id="destinos">
+      <div class="container">
+        <h2 class="title">Destinos destacados</h2>
+        <p class="subtitle">
+          Imágenes grandes para inspirarte. Explora playas, ciudades icónicas y
+          experiencias inolvidables.
+        </p>
+
+        <div class="grid destinos">
+          <article
+            class="card shadow-soft"
+            style="grid-column: span 6; height: 320px"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1600&auto=format&fit=crop"
+              alt="Caribe, arena blanca y mar turquesa"
+            />
+            <div class="overlay">
+              <h3>Caribe</h3>
+              <span class="price">desde USD 925</span>
+            </div>
+          </article>
+          <article
+            class="card shadow-soft"
+            style="grid-column: span 3; height: 320px"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1473959383410-a6f58845af88?q=80&w=1600&auto=format&fit=crop"
+              alt="Roma, Italia"
+            />
+            <div class="overlay"><h3>Roma & Mediterráneo</h3></div>
+          </article>
+          <article
+            class="card shadow-soft"
+            style="grid-column: span 3; height: 320px"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1431274172761-fca41d930114?q=80&w=1600&auto=format&fit=crop"
+              alt="Cataratas del Iguazú"
+            />
+            <div class="overlay"><h3>Iguazú</h3></div>
+          </article>
+          <article
+            class="card shadow-soft"
+            style="grid-column: span 4; height: 280px"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?q=80&w=1600&auto=format&fit=crop"
+              alt="Estambul, Turquía"
+            />
+            <div class="overlay">
+              <h3>Estambul</h3>
+              <span class="badge">2x1</span>
+            </div>
+          </article>
+          <article
+            class="card shadow-soft"
+            style="grid-column: span 4; height: 280px"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop"
+              alt="Riviera Maya"
+            />
+            <div class="overlay"><h3>Riviera Maya</h3></div>
+          </article>
+          <article
+            class="card shadow-soft"
+            style="grid-column: span 4; height: 280px"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1511735111819-9a3f7709049c?q=80&w=1600&auto=format&fit=crop"
+              alt="Panamá ciudad y playa"
+            />
+            <div class="overlay"><h3>Panamá</h3></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROMOCIONES (TARJETAS CON IMAGEN) -->
+    <section class="section" id="promos" style="background: #fff">
+      <div class="container">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 12px;
+            flex-wrap: wrap;
+          "
+        >
+          <div>
+            <h2 class="title">Promociones activas</h2>
+            <p class="subtitle">
+              Actualizamos constantemente las mejores ofertas. El color
+              <b style="color: var(--fuchsia)">fucsia</b> destaca oportunidades
+              limitadas.
+            </p>
+          </div>
+          <a href="#contacto" class="btn btn-primary">Quiero esta oferta</a>
+        </div>
+
+        <div class="promos">
+          <article class="promo shadow-soft">
+            <img
+              src="https://images.unsplash.com/photo-1493558103817-58b2924bce98?q=80&w=1600&auto=format&fit=crop"
+              alt="Cartagena de Indias"
+            />
+            <div class="content">
+              <span class="badge">¡Salidas confirmadas!</span>
+              <h4>Cartagena 4D/3N</h4>
+              <small>desde USD 845 · Hotel 3*</small>
+            </div>
+          </article>
+          <article class="promo shadow-soft">
+            <img
+              src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?q=80&w=1600&auto=format&fit=crop"
+              alt="Buenos Aires"
+            />
+            <div class="content">
+              <span class="badge">Nuevo 2026</span>
+              <h4>Buenos Aires 4D/3N</h4>
+              <small>desde USD 925 · Hotel 3*</small>
+            </div>
+          </article>
+          <article class="promo shadow-soft">
+            <img
+              src="https://images.unsplash.com/photo-1505764706515-aa95265c5abc?q=80&w=1600&auto=format&fit=crop"
+              alt="Punta Cana"
+            />
+            <div class="content">
+              <span class="badge">Últimos cupos</span>
+              <h4>Punta Cana 5D/4N</h4>
+              <small>desde USD 1,569 · All Inclusive</small>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIOS VISUALES -->
+    <section class="section">
+      <div class="container">
+        <h2 class="title">Historias que inspiran</h2>
+        <p class="subtitle">Clientes reales en sus destinos favoritos.</p>
+        <div class="testis">
+          <figure class="testi shadow-soft">
+            <img
+              src="https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=1600&auto=format&fit=crop"
+              alt="Pareja en la playa"
+            />
+            <blockquote>
+              “¡Atención impecable y el mejor precio para el Caribe!”
+            </blockquote>
+          </figure>
+          <figure class="testi shadow-soft">
+            <img
+              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1600&auto=format&fit=crop"
+              alt="Familia viajando"
+            />
+            <blockquote>
+              “La promoción de fin de año fue real: salidas confirmadas.”
+            </blockquote>
+          </figure>
+          <figure class="testi shadow-soft">
+            <img
+              src="https://images.unsplash.com/photo-1531259683007-016a7b628fc3?q=80&w=1600&auto=format&fit=crop"
+              alt="Grupo de amigos en ciudad europea"
+            />
+            <blockquote>
+              “Roma y Barcelona en crucero: ¡experiencia épica!”
+            </blockquote>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section class="section" id="contacto">
+      <div class="container contacto">
+        <div class="panel shadow-soft">
+          <h2 class="title">Solicita tu cotización</h2>
+          <p class="subtitle">
+            Cuéntanos a dónde quieres ir y te enviamos la mejor propuesta.
+          </p>
+          <form
+            onsubmit="event.preventDefault(); alert('¡Gracias! Te contactaremos pronto.');"
+          >
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"
+            >
+              <input type="text" placeholder="Nombre" required />
+              <input type="email" placeholder="Correo" required />
+            </div>
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"
+            >
+              <select required>
+                <option value="" disabled selected>Destino de interés</option>
+                <option>Caribe</option>
+                <option>Europa</option>
+                <option>Sudamérica</option>
+                <option>Mediterráneo</option>
+              </select>
+              <input
+                type="number"
+                placeholder="Presupuesto aprox. (USD)"
+                min="0"
+              />
+            </div>
+            <textarea
+              placeholder="Cuéntanos fechas, número de viajeros, salida desde…"
+            ></textarea>
+            <button class="btn btn-primary" style="background: var(--blue)">
+              Enviar
+            </button>
+          </form>
+        </div>
+        <div class="panel" style="padding: 0; overflow: hidden">
+          <img
+            src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1600&auto=format&fit=crop"
+            alt="Atardecer sobre una ciudad costera"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER con imagen oscurecida -->
+    <footer>
+      <img
+        class="bg"
+        src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=2000&auto=format&fit=crop"
+        alt="Fondo marino"
+      />
+      <div class="inner">
+        <div
+          class="container"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span class="dot" style="background: var(--sand)"></span>
+            <strong>Rustica Travel</strong>
+          </div>
+          <div style="opacity: 0.9">
+            © <span id="y"></span> Todos los derechos reservados ·
+            <a href="#" style="color: var(--sand)">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
