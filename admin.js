@@ -194,23 +194,133 @@ const CONTENT_SECTIONS = [
     id: "destinos",
     title: "Destinos destacados",
     description: "Encabezado del mosaico de seis destinos inspiradores.",
-    fields: [
+    groups: [
       {
-        key: "destinationsTitle",
-        label: "Título de sección",
-        defaultValue: "Destinos destacados",
-        placeholder: "Destinos destacados",
-        helper: "Encabezado principal sobre el mosaico de destinos.",
-        maxLength: 70,
+        id: "destinos-intro",
+        title: "Textos introductorios",
+        fields: [
+          {
+            key: "destinationsTitle",
+            label: "Título de sección",
+            defaultValue: "Destinos destacados",
+            placeholder: "Destinos destacados",
+            helper: "Encabezado principal sobre el mosaico de destinos.",
+            maxLength: 70,
+          },
+          {
+            key: "destinationsSubtitle",
+            label: "Descripción",
+            multiline: true,
+            defaultValue:
+              "Imágenes grandes para inspirarte. Explora playas, ciudades icónicas y experiencias inolvidables.",
+            helper: "Texto que introduce el mosaico de destinos destacados.",
+            maxLength: 260,
+          },
+        ],
       },
       {
-        key: "destinationsSubtitle",
-        label: "Descripción",
-        multiline: true,
-        defaultValue:
-          "Imágenes grandes para inspirarte. Explora playas, ciudades icónicas y experiencias inolvidables.",
-        helper: "Texto que introduce el mosaico de destinos destacados.",
-        maxLength: 260,
+        id: "destinos-card-1",
+        title: "Tarjeta: Caribe",
+        description: "Texto superpuesto en la imagen principal del mosaico.",
+        fields: [
+          {
+            key: "destinosCard1Title",
+            label: "Nombre del destino",
+            defaultValue: "Caribe",
+            placeholder: "Caribe",
+            helper: "Título destacado sobre la imagen.",
+            maxLength: 40,
+          },
+          {
+            key: "destinosCard1Price",
+            label: "Detalle destacado",
+            defaultValue: "desde USD 925",
+            helper: "Texto pequeño ubicado debajo del nombre.",
+            maxLength: 60,
+          },
+        ],
+      },
+      {
+        id: "destinos-card-2",
+        title: "Tarjeta: Roma & Mediterráneo",
+        description: "Texto visible en la segunda tarjeta del mosaico.",
+        fields: [
+          {
+            key: "destinosCard2Title",
+            label: "Nombre del destino",
+            defaultValue: "Roma & Mediterráneo",
+            placeholder: "Roma & Mediterráneo",
+            helper: "Título que aparece sobre la fotografía.",
+            maxLength: 40,
+          },
+        ],
+      },
+      {
+        id: "destinos-card-3",
+        title: "Tarjeta: Iguazú",
+        description: "Texto visible en la tercera tarjeta del mosaico.",
+        fields: [
+          {
+            key: "destinosCard3Title",
+            label: "Nombre del destino",
+            defaultValue: "Iguazú",
+            placeholder: "Iguazú",
+            helper: "Título que aparece sobre la imagen.",
+            maxLength: 40,
+          },
+        ],
+      },
+      {
+        id: "destinos-card-4",
+        title: "Tarjeta: Estambul",
+        description: "Texto y badge de la tarjeta dedicada a Estambul.",
+        fields: [
+          {
+            key: "destinosCard4Title",
+            label: "Nombre del destino",
+            defaultValue: "Estambul",
+            placeholder: "Estambul",
+            helper: "Título principal de la tarjeta.",
+            maxLength: 40,
+          },
+          {
+            key: "destinosCard4Badge",
+            label: "Etiqueta destacada",
+            defaultValue: "2x1",
+            helper: "Se muestra como badge sobre la imagen.",
+            maxLength: 20,
+          },
+        ],
+      },
+      {
+        id: "destinos-card-5",
+        title: "Tarjeta: Riviera Maya",
+        description: "Texto visible en la quinta tarjeta del mosaico.",
+        fields: [
+          {
+            key: "destinosCard5Title",
+            label: "Nombre del destino",
+            defaultValue: "Riviera Maya",
+            placeholder: "Riviera Maya",
+            helper: "Título que aparece sobre la fotografía.",
+            maxLength: 40,
+          },
+        ],
+      },
+      {
+        id: "destinos-card-6",
+        title: "Tarjeta: Panamá",
+        description: "Texto visible en la última tarjeta del mosaico.",
+        fields: [
+          {
+            key: "destinosCard6Title",
+            label: "Nombre del destino",
+            defaultValue: "Panamá",
+            placeholder: "Panamá",
+            helper: "Título que aparece sobre la imagen.",
+            maxLength: 40,
+          },
+        ],
       },
     ],
   },
@@ -218,31 +328,124 @@ const CONTENT_SECTIONS = [
     id: "promos",
     title: "Promociones activas",
     description: "Encabezado y botón que acompañan a las tarjetas de ofertas.",
-    fields: [
+    groups: [
       {
-        key: "promosTitle",
-        label: "Título de sección",
-        defaultValue: "Promociones activas",
-        placeholder: "Promociones activas",
-        helper: "Encabezado principal sobre las ofertas disponibles.",
-        maxLength: 70,
+        id: "promos-intro",
+        title: "Textos introductorios",
+        fields: [
+          {
+            key: "promosTitle",
+            label: "Título de sección",
+            defaultValue: "Promociones activas",
+            placeholder: "Promociones activas",
+            helper: "Encabezado principal sobre las ofertas disponibles.",
+            maxLength: 70,
+          },
+          {
+            key: "promosSubtitle",
+            label: "Descripción",
+            multiline: true,
+            defaultValue:
+              "Actualizamos constantemente las mejores ofertas. El color fucsia destaca oportunidades limitadas.",
+            helper: "Texto que explica cómo se actualizan las promociones.",
+            maxLength: 260,
+          },
+          {
+            key: "promosButton",
+            label: "Texto del botón",
+            placeholder: "Quiero esta oferta",
+            defaultValue: "Quiero esta oferta",
+            helper: "Botón que conecta directamente con la sección de contacto.",
+            maxLength: 40,
+          },
+        ],
       },
       {
-        key: "promosSubtitle",
-        label: "Descripción",
-        multiline: true,
-        defaultValue:
-          "Actualizamos constantemente las mejores ofertas. El color fucsia destaca oportunidades limitadas.",
-        helper: "Texto que explica cómo se actualizan las promociones.",
-        maxLength: 260,
+        id: "promo-1",
+        title: "Promoción: Cartagena 4D/3N",
+        description: "Textos superpuestos en la primera tarjeta de promociones.",
+        fields: [
+          {
+            key: "promo1Badge",
+            label: "Etiqueta destacada",
+            defaultValue: "¡Salidas confirmadas!",
+            helper: "Texto del badge superior.",
+            maxLength: 60,
+          },
+          {
+            key: "promo1Title",
+            label: "Título de la tarjeta",
+            defaultValue: "Cartagena 4D/3N",
+            placeholder: "Cartagena 4D/3N",
+            helper: "Nombre principal de la promoción.",
+            maxLength: 60,
+          },
+          {
+            key: "promo1Details",
+            label: "Detalle complementario",
+            defaultValue: "desde USD 845 · Hotel 3*",
+            helper: "Texto pequeño con condiciones o beneficios.",
+            maxLength: 80,
+          },
+        ],
       },
       {
-        key: "promosButton",
-        label: "Texto del botón",
-        placeholder: "Quiero esta oferta",
-        defaultValue: "Quiero esta oferta",
-        helper: "Botón que conecta directamente con la sección de contacto.",
-        maxLength: 40,
+        id: "promo-2",
+        title: "Promoción: Buenos Aires 4D/3N",
+        description: "Textos superpuestos en la segunda tarjeta de promociones.",
+        fields: [
+          {
+            key: "promo2Badge",
+            label: "Etiqueta destacada",
+            defaultValue: "Nuevo 2026",
+            helper: "Texto del badge superior.",
+            maxLength: 60,
+          },
+          {
+            key: "promo2Title",
+            label: "Título de la tarjeta",
+            defaultValue: "Buenos Aires 4D/3N",
+            placeholder: "Buenos Aires 4D/3N",
+            helper: "Nombre principal de la promoción.",
+            maxLength: 60,
+          },
+          {
+            key: "promo2Details",
+            label: "Detalle complementario",
+            defaultValue: "desde USD 925 · Hotel 3*",
+            helper: "Texto pequeño con condiciones o beneficios.",
+            maxLength: 80,
+          },
+        ],
+      },
+      {
+        id: "promo-3",
+        title: "Promoción: Punta Cana 5D/4N",
+        description: "Textos superpuestos en la tercera tarjeta de promociones.",
+        fields: [
+          {
+            key: "promo3Badge",
+            label: "Etiqueta destacada",
+            defaultValue: "Últimos cupos",
+            helper: "Texto del badge superior.",
+            maxLength: 60,
+          },
+          {
+            key: "promo3Title",
+            label: "Título de la tarjeta",
+            defaultValue: "Punta Cana 5D/4N",
+            placeholder: "Punta Cana 5D/4N",
+            helper: "Nombre principal de la promoción.",
+            maxLength: 60,
+          },
+          {
+            key: "promo3Details",
+            label: "Detalle complementario",
+            defaultValue: "desde USD 1,569 · All Inclusive",
+            helper: "Texto pequeño con condiciones o beneficios.",
+            maxLength: 80,
+          },
+        ],
       },
     ],
   },
@@ -250,22 +453,73 @@ const CONTENT_SECTIONS = [
     id: "testimonios",
     title: "Historias que inspiran",
     description: "Textos que acompañan la galería de testimonios.",
-    fields: [
+    groups: [
       {
-        key: "testimonialsTitle",
-        label: "Título de sección",
-        defaultValue: "Historias que inspiran",
-        placeholder: "Historias que inspiran",
-        helper: "Encabezado principal de la sección de testimonios.",
-        maxLength: 70,
+        id: "testimonios-intro",
+        title: "Textos introductorios",
+        fields: [
+          {
+            key: "testimonialsTitle",
+            label: "Título de sección",
+            defaultValue: "Historias que inspiran",
+            placeholder: "Historias que inspiran",
+            helper: "Encabezado principal de la sección de testimonios.",
+            maxLength: 70,
+          },
+          {
+            key: "testimonialsSubtitle",
+            label: "Descripción",
+            multiline: true,
+            defaultValue: "Clientes reales en sus destinos favoritos.",
+            helper: "Frase breve bajo el título de testimonios.",
+            maxLength: 160,
+          },
+        ],
       },
       {
-        key: "testimonialsSubtitle",
-        label: "Descripción",
-        multiline: true,
-        defaultValue: "Clientes reales en sus destinos favoritos.",
-        helper: "Frase breve bajo el título de testimonios.",
-        maxLength: 160,
+        id: "testimonio-1",
+        title: "Testimonio 1",
+        description: "Mensaje que acompaña la fotografía de la pareja en la playa.",
+        fields: [
+          {
+            key: "testimonio1Quote",
+            label: "Cita destacada",
+            multiline: true,
+            defaultValue: "“¡Atención impecable y el mejor precio para el Caribe!”",
+            helper: "Texto del bloque de cita bajo la imagen.",
+            maxLength: 220,
+          },
+        ],
+      },
+      {
+        id: "testimonio-2",
+        title: "Testimonio 2",
+        description: "Mensaje que acompaña la fotografía de la familia viajando.",
+        fields: [
+          {
+            key: "testimonio2Quote",
+            label: "Cita destacada",
+            multiline: true,
+            defaultValue: "“La promoción de fin de año fue real: salidas confirmadas.”",
+            helper: "Texto del bloque de cita bajo la imagen.",
+            maxLength: 220,
+          },
+        ],
+      },
+      {
+        id: "testimonio-3",
+        title: "Testimonio 3",
+        description: "Mensaje que acompaña la fotografía del grupo de amigos.",
+        fields: [
+          {
+            key: "testimonio3Quote",
+            label: "Cita destacada",
+            multiline: true,
+            defaultValue: "“Roma y Barcelona en crucero: ¡experiencia épica!”",
+            helper: "Texto del bloque de cita bajo la imagen.",
+            maxLength: 220,
+          },
+        ],
       },
     ],
   },
@@ -344,6 +598,43 @@ const contentSaveTimers = new Map();
 const sectionHighlightTimers = new WeakMap();
 let contentMessageTimer;
 let lastFocusedElementBeforeModal = null;
+
+function getSectionFieldGroups(section) {
+  if (!section) {
+    return [];
+  }
+
+  if (Array.isArray(section.groups) && section.groups.length > 0) {
+    return section.groups
+      .map((group, index) => {
+        const fields = Array.isArray(group?.fields) ? group.fields : [];
+        return {
+          id: group?.id || `${section.id || "section"}-group-${index}`,
+          title: group?.title,
+          description: group?.description,
+          fields,
+        };
+      })
+      .filter((group) => group.fields.length > 0);
+  }
+
+  if (Array.isArray(section.fields) && section.fields.length > 0) {
+    return [
+      {
+        id: `${section.id || "section"}-group`,
+        title: undefined,
+        description: undefined,
+        fields: section.fields,
+      },
+    ];
+  }
+
+  return [];
+}
+
+function getSectionFields(section) {
+  return getSectionFieldGroups(section).flatMap((group) => group.fields);
+}
 
 function loadLibrary() {
   try {
@@ -469,7 +760,8 @@ function setContentMessage(text, type) {
 
 function findContentFieldByKey(fieldKey) {
   for (const section of CONTENT_SECTIONS) {
-    const field = section.fields.find((item) => item.key === fieldKey);
+    const fields = getSectionFields(section);
+    const field = fields.find((item) => item.key === fieldKey);
     if (field) {
       return { section, field };
     }
@@ -535,10 +827,16 @@ function resetContentSection(sectionId) {
     return;
   }
 
+  const fields = getSectionFields(section);
+  if (fields.length === 0) {
+    setContentMessage(`El bloque "${section.title}" no tiene textos configurables.`, "");
+    return;
+  }
+
   const currentContent = loadContent();
   let changed = false;
 
-  section.fields.forEach((field) => {
+  fields.forEach((field) => {
     if (Object.prototype.hasOwnProperty.call(currentContent, field.key)) {
       delete currentContent[field.key];
       changed = true;
@@ -612,7 +910,8 @@ function renderLandingSections() {
   SECTION_LAYOUT.forEach((sectionConfig) => {
     const contentSection = CONTENT_SECTIONS.find((item) => item.id === sectionConfig.id);
     const hasSlots = Array.isArray(sectionConfig.slotKeys) && sectionConfig.slotKeys.length > 0;
-    const hasContent = Boolean(contentSection?.fields?.length);
+    const fieldGroups = getSectionFieldGroups(contentSection);
+    const hasContent = fieldGroups.length > 0;
 
     if (!hasSlots && !hasContent) {
       return;
@@ -669,69 +968,97 @@ function renderLandingSections() {
       const fieldsWrapper = document.createElement("div");
       fieldsWrapper.className = "content-fields";
 
-      contentSection.fields.forEach((field) => {
-        const fieldWrapper = document.createElement("div");
-        fieldWrapper.className = "content-field";
+      fieldGroups.forEach((group) => {
+        const groupWrapper = document.createElement("div");
+        groupWrapper.className = "content-fields-group";
 
-        const inputId = `content-${sectionConfig.id}-${field.key}`;
-
-        const label = document.createElement("label");
-        label.setAttribute("for", inputId);
-        label.textContent = field.label;
-        fieldWrapper.append(label);
-
-        let helperId;
-        if (field.helper) {
-          const helper = document.createElement("small");
-          helperId = `${inputId}-helper`;
-          helper.id = helperId;
-          helper.textContent = field.helper;
-          fieldWrapper.append(helper);
+        const shouldFrame = Boolean(
+          group.title || group.description || fieldGroups.length > 1
+        );
+        if (shouldFrame) {
+          groupWrapper.classList.add("content-fields-group--framed");
         }
 
-        const input = field.multiline
-          ? document.createElement("textarea")
-          : document.createElement("input");
-
-        if (!field.multiline) {
-          input.type = "text";
+        if (group.title) {
+          const groupTitle = document.createElement("h5");
+          groupTitle.className = "content-fields-group__title";
+          groupTitle.textContent = group.title;
+          groupWrapper.append(groupTitle);
         }
 
-        input.id = inputId;
-        input.value =
-          typeof currentContent[field.key] === "string"
-            ? currentContent[field.key]
-            : field.defaultValue;
-
-        if (field.placeholder) {
-          input.placeholder = field.placeholder;
+        if (group.description) {
+          const groupDescription = document.createElement("p");
+          groupDescription.className = "admin-note content-fields-group__description";
+          groupDescription.textContent = group.description;
+          groupWrapper.append(groupDescription);
         }
 
-        if (field.maxLength) {
-          input.maxLength = field.maxLength;
-        }
+        group.fields.forEach((field) => {
+          const fieldWrapper = document.createElement("div");
+          fieldWrapper.className = "content-field";
 
-        if (field.multiline) {
-          input.rows = 3;
-        }
+          const inputId = `content-${sectionConfig.id}-${field.key}`;
 
-        if (helperId) {
-          input.setAttribute("aria-describedby", helperId);
-        }
+          const label = document.createElement("label");
+          label.setAttribute("for", inputId);
+          label.textContent = field.label;
+          fieldWrapper.append(label);
 
-        input.addEventListener("input", (event) => {
-          queueContentSave(field.key, event.target.value || "");
-        });
-
-        input.addEventListener("blur", () => {
-          if (!input.value.trim()) {
-            queueContentSave(field.key, "");
-            input.value = field.defaultValue;
+          let helperId;
+          if (field.helper) {
+            const helper = document.createElement("small");
+            helperId = `${inputId}-helper`;
+            helper.id = helperId;
+            helper.textContent = field.helper;
+            fieldWrapper.append(helper);
           }
+
+          const input = field.multiline
+            ? document.createElement("textarea")
+            : document.createElement("input");
+
+          if (!field.multiline) {
+            input.type = "text";
+          }
+
+          input.id = inputId;
+          input.value =
+            typeof currentContent[field.key] === "string"
+              ? currentContent[field.key]
+              : field.defaultValue;
+
+          if (field.placeholder) {
+            input.placeholder = field.placeholder;
+          }
+
+          if (field.maxLength) {
+            input.maxLength = field.maxLength;
+          }
+
+          if (field.multiline) {
+            input.rows = 3;
+          }
+
+          if (helperId) {
+            input.setAttribute("aria-describedby", helperId);
+          }
+
+          input.addEventListener("input", (event) => {
+            queueContentSave(field.key, event.target.value || "");
+          });
+
+          input.addEventListener("blur", () => {
+            if (!input.value.trim()) {
+              queueContentSave(field.key, "");
+              input.value = field.defaultValue;
+            }
+          });
+
+          fieldWrapper.append(input);
+          groupWrapper.append(fieldWrapper);
         });
 
-        fieldWrapper.append(input);
-        fieldsWrapper.append(fieldWrapper);
+        fieldsWrapper.append(groupWrapper);
       });
 
       column.append(fieldsWrapper);
