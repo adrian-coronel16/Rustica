@@ -456,6 +456,13 @@ textarea {
 .auth-header {
   display: grid;
   gap: 10px;
+  position: static;
+  inset: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  backdrop-filter: none;
+  box-shadow: none;
 }
 
 .auth-accent {
