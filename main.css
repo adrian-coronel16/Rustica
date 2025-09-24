@@ -815,11 +815,12 @@ textarea {
   outline: 2px solid var(--blue);
   outline-offset: 3px;
 }
-.library-modal__grid {
+.library-modal__body {
   overflow-y: auto;
   padding-right: 8px;
   scrollbar-gutter: stable both-edges;
   max-height: 100%;
+  min-height: 0;
 }
 .no-scroll {
   overflow: hidden;
