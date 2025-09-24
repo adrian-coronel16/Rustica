@@ -230,6 +230,7 @@ const CONTENT_SECTIONS = [
             placeholder: "Caribe",
             helper: "Título destacado sobre la imagen.",
             maxLength: 40,
+            inlineOnly: true,
           },
           {
             key: "destinosCard1Price",
@@ -237,6 +238,7 @@ const CONTENT_SECTIONS = [
             defaultValue: "desde USD 925",
             helper: "Texto pequeño ubicado debajo del nombre.",
             maxLength: 60,
+            inlineOnly: true,
           },
         ],
       },
@@ -252,6 +254,7 @@ const CONTENT_SECTIONS = [
             placeholder: "Roma & Mediterráneo",
             helper: "Título que aparece sobre la fotografía.",
             maxLength: 40,
+            inlineOnly: true,
           },
         ],
       },
@@ -267,6 +270,7 @@ const CONTENT_SECTIONS = [
             placeholder: "Iguazú",
             helper: "Título que aparece sobre la imagen.",
             maxLength: 40,
+            inlineOnly: true,
           },
         ],
       },
@@ -282,6 +286,7 @@ const CONTENT_SECTIONS = [
             placeholder: "Estambul",
             helper: "Título principal de la tarjeta.",
             maxLength: 40,
+            inlineOnly: true,
           },
           {
             key: "destinosCard4Badge",
@@ -289,6 +294,7 @@ const CONTENT_SECTIONS = [
             defaultValue: "2x1",
             helper: "Se muestra como badge sobre la imagen.",
             maxLength: 20,
+            inlineOnly: true,
           },
         ],
       },
@@ -304,6 +310,7 @@ const CONTENT_SECTIONS = [
             placeholder: "Riviera Maya",
             helper: "Título que aparece sobre la fotografía.",
             maxLength: 40,
+            inlineOnly: true,
           },
         ],
       },
@@ -319,6 +326,7 @@ const CONTENT_SECTIONS = [
             placeholder: "Panamá",
             helper: "Título que aparece sobre la imagen.",
             maxLength: 40,
+            inlineOnly: true,
           },
         ],
       },
@@ -371,6 +379,7 @@ const CONTENT_SECTIONS = [
             defaultValue: "¡Salidas confirmadas!",
             helper: "Texto del badge superior.",
             maxLength: 60,
+            inlineOnly: true,
           },
           {
             key: "promo1Title",
@@ -379,6 +388,7 @@ const CONTENT_SECTIONS = [
             placeholder: "Cartagena 4D/3N",
             helper: "Nombre principal de la promoción.",
             maxLength: 60,
+            inlineOnly: true,
           },
           {
             key: "promo1Details",
@@ -386,6 +396,7 @@ const CONTENT_SECTIONS = [
             defaultValue: "desde USD 845 · Hotel 3*",
             helper: "Texto pequeño con condiciones o beneficios.",
             maxLength: 80,
+            inlineOnly: true,
           },
         ],
       },
@@ -400,6 +411,7 @@ const CONTENT_SECTIONS = [
             defaultValue: "Nuevo 2026",
             helper: "Texto del badge superior.",
             maxLength: 60,
+            inlineOnly: true,
           },
           {
             key: "promo2Title",
@@ -408,6 +420,7 @@ const CONTENT_SECTIONS = [
             placeholder: "Buenos Aires 4D/3N",
             helper: "Nombre principal de la promoción.",
             maxLength: 60,
+            inlineOnly: true,
           },
           {
             key: "promo2Details",
@@ -415,6 +428,7 @@ const CONTENT_SECTIONS = [
             defaultValue: "desde USD 925 · Hotel 3*",
             helper: "Texto pequeño con condiciones o beneficios.",
             maxLength: 80,
+            inlineOnly: true,
           },
         ],
       },
@@ -429,6 +443,7 @@ const CONTENT_SECTIONS = [
             defaultValue: "Últimos cupos",
             helper: "Texto del badge superior.",
             maxLength: 60,
+            inlineOnly: true,
           },
           {
             key: "promo3Title",
@@ -437,6 +452,7 @@ const CONTENT_SECTIONS = [
             placeholder: "Punta Cana 5D/4N",
             helper: "Nombre principal de la promoción.",
             maxLength: 60,
+            inlineOnly: true,
           },
           {
             key: "promo3Details",
@@ -444,6 +460,7 @@ const CONTENT_SECTIONS = [
             defaultValue: "desde USD 1,569 · All Inclusive",
             helper: "Texto pequeño con condiciones o beneficios.",
             maxLength: 80,
+            inlineOnly: true,
           },
         ],
       },
@@ -807,6 +824,10 @@ function findContentFieldByKey(fieldKey) {
   return { section: undefined, field: undefined };
 }
 
+function isFieldVisibleInPanel(field) {
+  return !(field && field.inlineOnly);
+}
+
 function queueContentSave(fieldKey, value) {
   if (!fieldKey) {
     return;
@@ -1096,9 +1117,12 @@ function renderLandingSections() {
     const contentSection = CONTENT_SECTIONS.find((item) => item.id === sectionConfig.id);
     const hasSlots = Array.isArray(sectionConfig.slotKeys) && sectionConfig.slotKeys.length > 0;
     const fieldGroups = getSectionFieldGroups(contentSection);
-    const hasContent = fieldGroups.length > 0;
+    const hasFieldDefinitions = fieldGroups.length > 0;
+    const hasVisibleContent = fieldGroups.some((group) =>
+      group.fields.some((field) => isFieldVisibleInPanel(field))
+    );
 
-    if (!hasSlots && !hasContent) {
+    if (!hasSlots && !hasFieldDefinitions) {
       return;
     }
 
@@ -1125,7 +1149,7 @@ function renderLandingSections() {
 
     header.append(headerBody);
 
-    if (hasContent) {
+    if (hasFieldDefinitions) {
       const resetButton = document.createElement("button");
       resetButton.type = "button";
       resetButton.className = "reset-btn";
@@ -1141,7 +1165,9 @@ function renderLandingSections() {
     const columns = document.createElement("div");
     columns.className = "landing-section-columns";
 
-    if (hasContent) {
+    let hasAppendedColumn = false;
+
+    if (hasVisibleContent) {
       const column = document.createElement("div");
       column.className =
         "landing-section-column landing-section-column--content";
@@ -1154,6 +1180,11 @@ function renderLandingSections() {
       fieldsWrapper.className = "content-fields";
 
       fieldGroups.forEach((group) => {
+        const visibleFields = group.fields.filter((field) => isFieldVisibleInPanel(field));
+        if (visibleFields.length === 0) {
+          return;
+        }
+
         const groupWrapper = document.createElement("div");
         groupWrapper.className = "content-fields-group";
 
@@ -1178,7 +1209,7 @@ function renderLandingSections() {
           groupWrapper.append(groupDescription);
         }
 
-        group.fields.forEach((field) => {
+        visibleFields.forEach((field) => {
           const fieldWrapper = document.createElement("div");
           fieldWrapper.className = "content-field";
 
@@ -1248,6 +1279,7 @@ function renderLandingSections() {
 
       column.append(fieldsWrapper);
       columns.append(column);
+      hasAppendedColumn = true;
     }
 
     if (hasSlots) {
@@ -1369,9 +1401,12 @@ function renderLandingSections() {
 
       column.append(slotGrid);
       columns.append(column);
+      hasAppendedColumn = true;
     }
 
-    sectionElement.append(columns);
+    if (hasAppendedColumn) {
+      sectionElement.append(columns);
+    }
     landingSections.append(sectionElement);
   });
 }
