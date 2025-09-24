@@ -1,6 +1,7 @@
 const LIBRARY_STORAGE_KEY = "rusticaImageLibrary";
 const ASSIGNMENTS_STORAGE_KEY = "rusticaImageAssignments";
 const CONTENT_STORAGE_KEY = "rusticaContentSettings";
+const SLOT_TEXT_STORAGE_KEY = "rusticaSlotTextOverrides";
 
 const IMAGE_SLOTS = [
   {
@@ -397,6 +398,258 @@ function saveAssignments(assignments) {
   }
 }
 
+function loadSlotTextOverrides() {
+  try {
+    const stored = localStorage.getItem(SLOT_TEXT_STORAGE_KEY);
+    if (!stored) {
+      return {};
+    }
+    const parsed = JSON.parse(stored);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    console.error("No se pudieron cargar los textos personalizados de las tarjetas.", error);
+    return {};
+  }
+}
+
+function saveSlotTextOverrides(overrides) {
+  try {
+    const entries = overrides && typeof overrides === "object" ? Object.keys(overrides) : [];
+    if (entries.length === 0) {
+      localStorage.removeItem(SLOT_TEXT_STORAGE_KEY);
+    } else {
+      localStorage.setItem(SLOT_TEXT_STORAGE_KEY, JSON.stringify(overrides));
+    }
+    return true;
+  } catch (error) {
+    console.error("No se pudieron guardar los textos personalizados de las tarjetas.", error);
+    return false;
+  }
+}
+
+function updateSlotText(slotKey, field, value, options = {}) {
+  if (!slotKey || !field) {
+    renderLandingSections();
+    return;
+  }
+
+  const {
+    defaultValue = "",
+    fieldLabel = "texto",
+    slotDefaultLabel = "tarjeta",
+    slotCurrentLabel = slotDefaultLabel,
+    useNewValueInMessage = false,
+  } = options;
+
+  const overrides = loadSlotTextOverrides();
+  const slotOverrides = { ...(overrides[slotKey] || {}) };
+  const trimmed = typeof value === "string" ? value.trim() : "";
+  const trimmedDefault = typeof defaultValue === "string" ? defaultValue.trim() : "";
+  const shouldReset = trimmed.length === 0 || trimmed === trimmedDefault;
+
+  let changed = false;
+
+  if (shouldReset) {
+    if (Object.prototype.hasOwnProperty.call(slotOverrides, field)) {
+      delete slotOverrides[field];
+      changed = true;
+    }
+  } else if (slotOverrides[field] !== trimmed) {
+    slotOverrides[field] = trimmed;
+    changed = true;
+  }
+
+  if (!changed) {
+    renderLandingSections();
+    return;
+  }
+
+  if (Object.keys(slotOverrides).length === 0) {
+    delete overrides[slotKey];
+  } else {
+    overrides[slotKey] = slotOverrides;
+  }
+
+  const saveResult = saveSlotTextOverrides(overrides);
+  const referenceName = shouldReset
+    ? slotDefaultLabel
+    : useNewValueInMessage && trimmed.length > 0
+    ? trimmed
+    : slotCurrentLabel || slotDefaultLabel;
+
+  if (saveResult) {
+    const message = shouldReset
+      ? `Se restableció el ${fieldLabel} de "${referenceName}".`
+      : `Se actualizó el ${fieldLabel} de "${referenceName}".`;
+    setContentMessage(message, "success");
+  } else {
+    const errorReference = slotCurrentLabel || slotDefaultLabel;
+    setContentMessage(
+      `No se pudo guardar el ${fieldLabel} de "${errorReference}". Verifica el espacio disponible en tu navegador.`,
+      "error"
+    );
+  }
+
+  renderLandingSections();
+}
+
+function setupSlotInlineEditing(element, config) {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+
+  const {
+    slotKey,
+    field,
+    defaultValue = "",
+    fieldLabel = "texto",
+    slotDefaultLabel = "tarjeta",
+    slotCurrentLabel = slotDefaultLabel,
+    useNewValueInMessage = false,
+    multiline = false,
+    maxLength,
+  } = config || {};
+
+  if (!slotKey || !field) {
+    return;
+  }
+
+  element.classList.add("slot-editable");
+  element.setAttribute("tabindex", "0");
+  element.setAttribute("role", "textbox");
+  element.setAttribute(
+    "aria-label",
+    `Editar ${fieldLabel} de ${slotCurrentLabel || slotDefaultLabel}`
+  );
+  element.title = `Haz doble clic para editar el ${fieldLabel} de esta tarjeta.`;
+
+  const startEditing = () => {
+    if (element.querySelector(".slot-inline-editor")) {
+      return;
+    }
+
+    const currentText = element.textContent || "";
+    const input = multiline ? document.createElement("textarea") : document.createElement("input");
+    input.className = "slot-inline-editor";
+    if (multiline) {
+      input.classList.add("slot-inline-editor--multiline");
+      const lineCount = currentText.split("\n").length || 1;
+      input.rows = Math.min(6, Math.max(3, lineCount));
+    } else {
+      input.type = "text";
+    }
+    if (typeof maxLength === "number" && maxLength > 0) {
+      input.setAttribute("maxlength", String(maxLength));
+    }
+    input.value = currentText;
+
+    element.replaceChildren(input);
+    window.requestAnimationFrame(() => {
+      input.focus();
+      if (typeof input.select === "function") {
+        input.select();
+      }
+    });
+
+    const finish = (shouldSave) => {
+      if (!shouldSave) {
+        element.textContent = currentText;
+        window.requestAnimationFrame(() => {
+          if (typeof element.focus === "function") {
+            try {
+              element.focus({ preventScroll: true });
+            } catch (error) {
+              element.focus();
+            }
+          }
+        });
+        return;
+      }
+
+      const nextValue = input.value;
+      if (nextValue.trim() === currentText.trim()) {
+        element.textContent = currentText;
+        window.requestAnimationFrame(() => {
+          if (typeof element.focus === "function") {
+            try {
+              element.focus({ preventScroll: true });
+            } catch (error) {
+              element.focus();
+            }
+          }
+        });
+        return;
+      }
+
+      updateSlotText(slotKey, field, nextValue, {
+        defaultValue,
+        fieldLabel,
+        slotDefaultLabel,
+        slotCurrentLabel,
+        useNewValueInMessage,
+      });
+    };
+
+    input.addEventListener("blur", () => finish(true));
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        finish(false);
+      }
+      if (!multiline && event.key === "Enter") {
+        event.preventDefault();
+        finish(true);
+      }
+      if (multiline && (event.key === "Enter" && (event.metaKey || event.ctrlKey))) {
+        event.preventDefault();
+        finish(true);
+      }
+    });
+  };
+
+  element.addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    startEditing();
+  });
+
+  element.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      startEditing();
+    }
+  });
+}
+
+function clearSlotTextOverrides(slotKeys) {
+  if (!Array.isArray(slotKeys) || slotKeys.length === 0) {
+    return { changed: false, success: true };
+  }
+
+  const overrides = loadSlotTextOverrides();
+  const uniqueKeys = Array.from(
+    new Set(slotKeys.filter((key) => typeof key === "string" && key.trim().length > 0))
+  );
+
+  if (uniqueKeys.length === 0) {
+    return { changed: false, success: true };
+  }
+
+  let changed = false;
+  uniqueKeys.forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(overrides, key)) {
+      delete overrides[key];
+      changed = true;
+    }
+  });
+
+  if (!changed) {
+    return { changed: false, success: true };
+  }
+
+  const success = saveSlotTextOverrides(overrides);
+  return { changed: true, success };
+}
+
 function loadContent() {
   try {
     const stored = localStorage.getItem(CONTENT_STORAGE_KEY);
@@ -535,17 +788,35 @@ function resetContentSection(sectionId) {
     return;
   }
 
+  const sectionLayout = SECTION_LAYOUT.find((item) => item.id === sectionId);
+  const slotKeys = Array.isArray(sectionLayout?.slotKeys) ? sectionLayout.slotKeys : [];
+  const fields = getSectionFields(section);
+  if (fields.length === 0 && slotKeys.length === 0) {
+    setContentMessage(`El bloque "${section.title}" no tiene textos configurables.`, "");
+    return;
+  }
+
   const currentContent = loadContent();
-  let changed = false;
+  let contentChanged = false;
 
   section.fields.forEach((field) => {
     if (Object.prototype.hasOwnProperty.call(currentContent, field.key)) {
       delete currentContent[field.key];
-      changed = true;
+      contentChanged = true;
     }
   });
 
-  if (!changed) {
+  const { changed: slotChanged, success: slotSuccess } = clearSlotTextOverrides(slotKeys);
+
+  if (!slotSuccess) {
+    setContentMessage(
+      `No se pudieron restablecer las tarjetas asociadas a "${section.title}".`,
+      "error"
+    );
+    return;
+  }
+
+  if (!contentChanged && !slotChanged) {
     setContentMessage(
       `El bloque "${section.title}" ya usa los textos predeterminados.`,
       ""
@@ -553,17 +824,28 @@ function resetContentSection(sectionId) {
     return;
   }
 
-  if (saveContent(currentContent)) {
-    setContentMessage(`Se restablecieron los textos de "${section.title}".`, "success");
-    renderLandingSections();
-  } else {
+  if (contentChanged && !saveContent(currentContent)) {
     setContentMessage("No se pudieron restablecer los textos del bloque.", "error");
+    return;
   }
+
+  const message = contentChanged && slotChanged
+    ? `Se restablecieron los textos de "${section.title}" y sus tarjetas.`
+    : contentChanged
+    ? `Se restablecieron los textos de "${section.title}".`
+    : `Se restablecieron las tarjetas asociadas a "${section.title}".`;
+
+  setContentMessage(message, "success");
+  renderLandingSections();
 }
 
 function resetAllContent() {
   const currentContent = loadContent();
-  if (Object.keys(currentContent).length === 0) {
+  const slotOverrides = loadSlotTextOverrides();
+  const hasContent = Object.keys(currentContent).length > 0;
+  const hasSlotOverrides = Object.keys(slotOverrides).length > 0;
+
+  if (!hasContent && !hasSlotOverrides) {
     setContentMessage("Aún no hay textos personalizados para restablecer.", "");
     return;
   }
@@ -575,12 +857,35 @@ function resetAllContent() {
     return;
   }
 
-  if (saveContent({})) {
-    setContentMessage("Todos los textos volvieron a su versión original.", "success");
-    renderLandingSections();
-  } else {
-    setContentMessage("No se pudieron restablecer todos los textos.", "error");
+  const allSlotKeys = IMAGE_SLOTS.map((slot) => slot.key);
+  const { changed: slotsCleared, success: slotsSuccess } = clearSlotTextOverrides(allSlotKeys);
+
+  if (!slotsSuccess) {
+    setContentMessage(
+      "No se pudieron restablecer las tarjetas personalizadas. Verifica el espacio disponible en tu navegador.",
+      "error"
+    );
+    return;
   }
+
+  let contentSaved = true;
+  if (hasContent) {
+    contentSaved = saveContent({});
+  }
+
+  if (!contentSaved) {
+    setContentMessage("No se pudieron restablecer todos los textos.", "error");
+    return;
+  }
+
+  const message = hasContent && slotsCleared
+    ? "Todos los textos y las tarjetas volvieron a su versión original."
+    : hasContent
+    ? "Todos los textos volvieron a su versión original."
+    : "Las tarjetas volvieron a su versión original.";
+
+  setContentMessage(message, "success");
+  renderLandingSections();
 }
 
 function readFileAsDataURL(file) {
@@ -606,6 +911,7 @@ function renderLandingSections() {
   const library = loadLibrary();
   const libraryMap = new Map(library.map((image) => [image.id, image]));
   const currentContent = loadContent();
+  const slotTextOverrides = loadSlotTextOverrides();
 
   landingSections.innerHTML = "";
 
@@ -763,20 +1069,54 @@ function renderLandingSections() {
 
         const currentImage = libraryMap.get(assignments[slot.key]);
 
+        const slotOverride = slotTextOverrides[slot.key] || {};
+        const storedLabel =
+          typeof slotOverride.label === "string" && slotOverride.label.trim().length > 0
+            ? slotOverride.label
+            : "";
+        const storedDescription =
+          typeof slotOverride.description === "string" && slotOverride.description.trim().length > 0
+            ? slotOverride.description
+            : "";
+
+        const displayLabel = storedLabel || slot.label;
+        const descriptionValue = storedDescription || slot.description || "";
+        const hasDescription = descriptionValue.trim().length > 0;
+
         const preview = document.createElement("img");
         preview.src = currentImage?.src || slot.defaultSrc;
         preview.alt = currentImage?.alt || slot.defaultAlt;
         card.append(preview);
 
         const cardTitle = document.createElement("h3");
-        cardTitle.textContent = slot.label;
+        cardTitle.textContent = displayLabel;
         card.append(cardTitle);
+        setupSlotInlineEditing(cardTitle, {
+          slotKey: slot.key,
+          field: "label",
+          defaultValue: slot.label,
+          fieldLabel: "título",
+          slotDefaultLabel: slot.label,
+          slotCurrentLabel: displayLabel,
+          useNewValueInMessage: true,
+          maxLength: 140,
+        });
 
-        if (slot.description) {
+        if (hasDescription) {
           const description = document.createElement("p");
           description.className = "slot-description";
-          description.textContent = slot.description;
+          description.textContent = descriptionValue;
           card.append(description);
+          setupSlotInlineEditing(description, {
+            slotKey: slot.key,
+            field: "description",
+            defaultValue: slot.description || "",
+            fieldLabel: "descripción",
+            slotDefaultLabel: displayLabel,
+            slotCurrentLabel: displayLabel,
+            multiline: true,
+            maxLength: 220,
+          });
         }
 
         const status = document.createElement("p");

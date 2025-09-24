@@ -846,10 +846,46 @@ textarea {
 .slot-card h3 {
   margin: 0;
 }
+.slot-editable {
+  display: block;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: text;
+  background: transparent;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.slot-editable:hover {
+  background: rgba(226, 232, 240, 0.6);
+}
+.slot-editable:focus-visible {
+  outline: 2px solid rgba(37, 116, 175, 0.5);
+  outline-offset: 2px;
+  background: rgba(226, 232, 240, 0.85);
+}
 .slot-description {
   font-size: 0.85rem;
   color: #64748b;
   margin: 0;
+}
+.slot-inline-editor {
+  width: 100%;
+  font: inherit;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  padding: 10px 12px;
+  background: #fff;
+  color: #0f172a;
+  box-shadow: 0 0 0 2px rgba(37, 116, 175, 0.12);
+}
+.slot-inline-editor:focus {
+  outline: 2px solid rgba(37, 116, 175, 0.45);
+  outline-offset: 1px;
+}
+.slot-inline-editor--multiline {
+  min-height: 72px;
+  resize: vertical;
+  line-height: 1.45;
 }
 .slot-status {
   font-size: 0.85rem;
