@@ -1627,9 +1627,26 @@ function buildLibraryCard(image) {
   deleteButton.innerHTML =
     '<span class="library-delete-icon" aria-hidden="true">🗑</span><span>Eliminar</span>';
   deleteButton.addEventListener("click", () => {
-    const confirmDelete = window.confirm(
-      `¿Eliminar "${image.name}" de la biblioteca? Esta acción también quitará su uso del sitio.`
-    );
+    const message = `¿Eliminar "${image.name}" de la biblioteca? Esta acción también quitará su uso del sitio.`;
+
+    if (window.Swal) {
+      Swal.fire({
+        title: "Eliminar imagen",
+        text: message,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#0f4c81",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteImage(image.id);
+        }
+      });
+      return;
+    }
+
+    const confirmDelete = window.confirm(message);
     if (!confirmDelete) {
       return;
     }
