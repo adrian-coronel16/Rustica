@@ -1,3 +1,62 @@
+const ADMIN_SESSION_STORAGE_KEY = "rusticaAdminSession";
+const ADMIN_CREDENTIAL_DIGEST = "e89b310bb7f4858570fc303df9c0701ac98489c1709021638b5a654c8da7abd4";
+const ADMIN_SESSION_MAX_AGE = 1000 * 60 * 60 * 4; // 4 horas
+
+function readAdminSession() {
+  try {
+    const stored = localStorage.getItem(ADMIN_SESSION_STORAGE_KEY);
+    if (!stored) {
+      return null;
+    }
+    const parsed = JSON.parse(stored);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (error) {
+    console.warn("No fue posible leer la sesión del administrador.", error);
+    return null;
+  }
+}
+
+function isAdminSessionValid(session) {
+  if (!session) {
+    return false;
+  }
+  const { token, timestamp } = session;
+  if (token !== ADMIN_CREDENTIAL_DIGEST) {
+    return false;
+  }
+  if (typeof timestamp !== "number") {
+    return false;
+  }
+  if (Date.now() - timestamp > ADMIN_SESSION_MAX_AGE) {
+    localStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
+    return false;
+  }
+  return true;
+}
+
+function refreshAdminSessionTimestamp(session) {
+  if (!session) {
+    return;
+  }
+  try {
+    const updated = { ...session, timestamp: Date.now() };
+    localStorage.setItem(ADMIN_SESSION_STORAGE_KEY, JSON.stringify(updated));
+  } catch (error) {
+    console.warn("No se pudo actualizar la sesión del administrador.", error);
+  }
+}
+
+const ADMIN_SESSION = readAdminSession();
+const ADMIN_SESSION_ACTIVE = isAdminSessionValid(ADMIN_SESSION);
+
+if (!ADMIN_SESSION_ACTIVE) {
+  window.location.replace("login.html");
+}
+
+if (ADMIN_SESSION_ACTIVE) {
+  refreshAdminSessionTimestamp(ADMIN_SESSION);
+}
+
 const LIBRARY_STORAGE_KEY = "rusticaImageLibrary";
 const ASSIGNMENTS_STORAGE_KEY = "rusticaImageAssignments";
 const CONTENT_STORAGE_KEY = "rusticaContentSettings";
@@ -1911,11 +1970,11 @@ async function handleSubmit(event) {
   showAdminAlert(`Se agregó ${newImageLabel} a tu biblioteca.`, "success");
 }
 
-if (form) {
+if (ADMIN_SESSION_ACTIVE && form) {
   form.addEventListener("submit", handleSubmit);
 }
 
-if (fileInput && urlInput) {
+if (ADMIN_SESSION_ACTIVE && fileInput && urlInput) {
   fileInput.addEventListener("change", () => {
     if (fileInput.files && fileInput.files.length > 0) {
       urlInput.value = "";
@@ -1928,19 +1987,19 @@ if (fileInput && urlInput) {
   });
 }
 
-if (resetContentButton) {
+if (ADMIN_SESSION_ACTIVE && resetContentButton) {
   resetContentButton.addEventListener("click", resetAllContent);
 }
 
-if (openLibraryModalButton) {
+if (ADMIN_SESSION_ACTIVE && openLibraryModalButton) {
   openLibraryModalButton.addEventListener("click", openLibraryModal);
 }
 
-if (closeLibraryModalButton) {
+if (ADMIN_SESSION_ACTIVE && closeLibraryModalButton) {
   closeLibraryModalButton.addEventListener("click", closeLibraryModal);
 }
 
-if (libraryModal) {
+if (ADMIN_SESSION_ACTIVE && libraryModal) {
   libraryModal.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) {
@@ -1953,6 +2012,28 @@ if (libraryModal) {
   });
 }
 
-renderLibrary();
-renderLandingSections();
-setupOverviewNavigation();
+if (ADMIN_SESSION_ACTIVE) {
+  const logoutButton = document.getElementById("logoutButton");
+  if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
+      localStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
+      window.location.replace("login.html");
+    });
+  }
+
+  window.addEventListener("storage", (event) => {
+    if (event.storageArea !== localStorage) {
+      return;
+    }
+    if (event.key === ADMIN_SESSION_STORAGE_KEY) {
+      const session = readAdminSession();
+      if (!isAdminSessionValid(session)) {
+        window.location.replace("login.html");
+      }
+    }
+  });
+
+  renderLibrary();
+  renderLandingSections();
+  setupOverviewNavigation();
+}
