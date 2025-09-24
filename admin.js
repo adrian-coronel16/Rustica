@@ -643,6 +643,7 @@ const libraryModalList = document.getElementById("libraryModalList");
 const openLibraryModalButton = document.getElementById("openLibraryModal");
 const closeLibraryModalButton = document.getElementById("closeLibraryModal");
 const messageElement = document.getElementById("formMessage");
+const adminAlertsContainer = document.getElementById("adminAlerts");
 const fileInput = document.getElementById("imageFile");
 const urlInput = document.getElementById("imageUrl");
 const landingSections = document.getElementById("landingSections");
@@ -651,6 +652,9 @@ const resetContentButton = document.getElementById("resetContentButton");
 const flowLinks = document.querySelectorAll(".flow-link[data-target]");
 const contentSaveTimers = new Map();
 const sectionHighlightTimers = new WeakMap();
+const adminAlertTimers = new WeakMap();
+const ADMIN_ALERT_TIMEOUT = 4200;
+const ADMIN_ALERT_TIMEOUT_ERROR = 6500;
 let contentMessageTimer;
 let lastFocusedElementBeforeModal = null;
 
@@ -715,6 +719,10 @@ function saveLibrary(library) {
       "No se pudo guardar la biblioteca en este navegador. Verifica el espacio disponible.",
       "error"
     );
+    showAdminAlert(
+      "No se pudo guardar la biblioteca en este navegador. Verifica el espacio disponible.",
+      "error"
+    );
     return false;
   }
 }
@@ -739,6 +747,10 @@ function saveAssignments(assignments) {
     return true;
   } catch (error) {
     console.error("No se pudieron guardar las asignaciones.", error);
+    showAdminAlert(
+      "No se pudieron guardar las asignaciones en este navegador. Verifica el espacio disponible.",
+      "error"
+    );
     return false;
   }
 }
@@ -770,6 +782,10 @@ function saveContent(content) {
     console.error("No se pudo guardar el contenido personalizado.", error);
     setContentMessage(
       "No se pudo guardar el contenido en este navegador. Verifica el espacio disponible.",
+      "error"
+    );
+    showAdminAlert(
+      "No se pudo guardar el contenido personalizado en este navegador. Verifica el espacio disponible.",
       "error"
     );
     return false;
@@ -811,6 +827,96 @@ function setContentMessage(text, type) {
       contentMessageTimer = undefined;
     }, timeout);
   }
+}
+
+function getAdminAlertTimeout(type) {
+  return type === "error" ? ADMIN_ALERT_TIMEOUT_ERROR : ADMIN_ALERT_TIMEOUT;
+}
+
+function getAdminAlertIcon(type) {
+  switch (type) {
+    case "success":
+      return "✔";
+    case "error":
+      return "⚠";
+    default:
+      return "ℹ";
+  }
+}
+
+function showAdminAlert(message, type = "info") {
+  if (!adminAlertsContainer) {
+    return null;
+  }
+
+  const messageString =
+    typeof message === "string" ? message.trim() : String(message ?? "").trim();
+
+  if (!messageString) {
+    return null;
+  }
+
+  const normalizedType = type === "success" || type === "error" ? type : "info";
+
+  const alert = document.createElement("div");
+  alert.className = `admin-alert admin-alert--${normalizedType}`;
+  alert.setAttribute("role", normalizedType === "error" ? "alert" : "status");
+
+  const icon = document.createElement("span");
+  icon.className = "admin-alert__icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent = getAdminAlertIcon(normalizedType);
+
+  const messageText = document.createElement("p");
+  messageText.className = "admin-alert__message";
+  messageText.textContent = messageString;
+
+  const closeButton = document.createElement("button");
+  closeButton.type = "button";
+  closeButton.className = "admin-alert__close";
+  closeButton.setAttribute("aria-label", "Cerrar alerta");
+  closeButton.innerHTML = "&times;";
+  closeButton.addEventListener("click", () => dismissAdminAlert(alert));
+
+  alert.append(icon, messageText, closeButton);
+  adminAlertsContainer.append(alert);
+
+  window.requestAnimationFrame(() => {
+    alert.classList.add("is-visible");
+  });
+
+  const timeoutId = window.setTimeout(() => {
+    dismissAdminAlert(alert);
+  }, getAdminAlertTimeout(normalizedType));
+
+  adminAlertTimers.set(alert, timeoutId);
+
+  return alert;
+}
+
+function dismissAdminAlert(alert) {
+  if (!alert) {
+    return;
+  }
+
+  const timeoutId = adminAlertTimers.get(alert);
+  if (timeoutId) {
+    window.clearTimeout(timeoutId);
+    adminAlertTimers.delete(alert);
+  }
+
+  let removed = false;
+  const finalizeRemoval = () => {
+    if (removed) {
+      return;
+    }
+    removed = true;
+    alert.remove();
+  };
+
+  alert.classList.remove("is-visible");
+  alert.addEventListener("transitionend", finalizeRemoval, { once: true });
+  window.setTimeout(finalizeRemoval, 260);
 }
 
 function findContentFieldByKey(fieldKey) {
@@ -1691,12 +1797,23 @@ function closeLibraryModal() {
 
 function deleteImage(imageId) {
   const library = loadLibrary();
-  const filtered = library.filter((image) => image.id !== imageId);
-  if (filtered.length === library.length) {
+  const targetImage = library.find((image) => image.id === imageId);
+
+  if (!targetImage) {
+    showAdminAlert(
+      "No se encontró la imagen seleccionada. Actualiza la página e inténtalo nuevamente.",
+      "error"
+    );
     return;
   }
 
+  const imageName = typeof targetImage.name === "string" ? targetImage.name.trim() : "";
+  const readableName = imageName ? `“${imageName}”` : "la imagen seleccionada";
+
+  const filtered = library.filter((image) => image.id !== imageId);
+
   if (!saveLibrary(filtered)) {
+    showAdminAlert(`No se pudo eliminar ${readableName}. Intenta nuevamente.`, "error");
     return;
   }
 
@@ -1709,12 +1826,17 @@ function deleteImage(imageId) {
     }
   });
 
-  if (updated) {
-    saveAssignments(assignments);
+  if (updated && !saveAssignments(assignments)) {
+    showAdminAlert(
+      "La imagen se eliminó, pero no se pudieron actualizar las asignaciones guardadas.",
+      "error"
+    );
   }
 
   renderLibrary();
   renderLandingSections();
+
+  showAdminAlert(`Se eliminó ${readableName} de la biblioteca.`, "success");
 }
 
 async function handleSubmit(event) {
@@ -1767,6 +1889,9 @@ async function handleSubmit(event) {
   setMessage("Imagen guardada en la biblioteca.", "success");
   renderLibrary();
   renderLandingSections();
+  const newImageName = newImage.name && newImage.name.trim();
+  const newImageLabel = newImageName ? `“${newImageName}”` : "la nueva imagen";
+  showAdminAlert(`Se agregó ${newImageLabel} a tu biblioteca.`, "success");
 }
 
 if (form) {
