@@ -429,6 +429,11 @@ textarea {
     linear-gradient(135deg, #f5f7fa 0%, #eaeef4 48%, #f8f5f1 100%);
 }
 
+.auth-body > header,
+.auth-body > nav {
+  display: none !important;
+}
+
 .auth-wrapper {
   width: min(1080px, 98%);
   display: grid;
