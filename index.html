@@ -501,7 +501,20 @@
             Cuéntanos a dónde quieres ir y te enviamos la mejor propuesta.
           </p>
           <form
-            onsubmit="event.preventDefault(); alert('¡Gracias! Te contactaremos pronto.');"
+            onsubmit="
+              event.preventDefault();
+              if (window.Swal) {
+                Swal.fire({
+                  title: '¡Gracias!',
+                  text: 'Te contactaremos pronto.',
+                  icon: 'success',
+                  confirmButtonColor: '#0f4c81',
+                  confirmButtonText: 'Cerrar'
+                });
+              } else {
+                alert('¡Gracias! Te contactaremos pronto.');
+              }
+            "
           >
             <div
               style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"
@@ -578,6 +591,7 @@
       </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="main.js"></script>
   </body>
 </html>
