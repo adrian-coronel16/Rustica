@@ -78,9 +78,6 @@ function applyManagedImages() {
   });
 }
 
-applyManagedImages();
-applyManagedContent();
-
 function applyManagedContent() {
   const contentSettings = loadContentFromStorage();
 
@@ -108,6 +105,31 @@ function applyManagedContent() {
     }
   });
 }
+
+function refreshManagedAssets() {
+  applyManagedImages();
+  applyManagedContent();
+}
+
+refreshManagedAssets();
+
+window.addEventListener("storage", (event) => {
+  if (event.storageArea !== localStorage) {
+    return;
+  }
+
+  if (
+    event.key === null ||
+    event.key === LIBRARY_STORAGE_KEY ||
+    event.key === ASSIGNMENTS_STORAGE_KEY
+  ) {
+    applyManagedImages();
+  }
+
+  if (event.key === null || event.key === CONTENT_STORAGE_KEY) {
+    applyManagedContent();
+  }
+});
 
 // Slider simple y ligero
 const slides = document.querySelectorAll(".slide");
