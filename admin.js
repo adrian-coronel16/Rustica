@@ -1999,6 +1999,54 @@ if (ADMIN_SESSION_ACTIVE && closeLibraryModalButton) {
   closeLibraryModalButton.addEventListener("click", closeLibraryModal);
 }
 
+function setupNavigationToggle() {
+  const navElement = document.getElementById("nav");
+  if (!navElement) {
+    return;
+  }
+
+  const toggleButton = navElement.querySelector("[data-nav-toggle]");
+  if (!toggleButton) {
+    return;
+  }
+
+  const closeNav = () => {
+    navElement.classList.remove("open");
+    toggleButton.setAttribute("aria-expanded", "false");
+  };
+
+  toggleButton.addEventListener("click", () => {
+    const isOpen = navElement.classList.toggle("open");
+    toggleButton.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  navElement.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (navElement.classList.contains("open")) {
+        closeNav();
+      }
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && navElement.classList.contains("open")) {
+      closeNav();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!navElement.classList.contains("open")) {
+      return;
+    }
+    if (navElement.contains(event.target) || toggleButton.contains(event.target)) {
+      return;
+    }
+    closeNav();
+  });
+}
+
+setupNavigationToggle();
+
 if (ADMIN_SESSION_ACTIVE && libraryModal) {
   libraryModal.addEventListener("click", (event) => {
     const target = event.target;

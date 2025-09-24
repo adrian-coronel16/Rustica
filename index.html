@@ -21,22 +21,32 @@
     <header>
       <div class="container nav">
         <a href="#" class="brand" aria-label="Rustica Travel">
-          <span class="dot"></span>
-          <span>Rustica <span style="color: var(--sand)">Travel</span></span>
+          <img src="assets/logo-rustica-travel.svg" alt="Rustica Travel" class="brand__logo" />
+          <div class="brand__copy" aria-hidden="true">
+            <span class="brand__name">Rustica Travel</span>
+            <span class="brand__tagline">Viajes boutique para grandes historias</span>
+          </div>
         </a>
-        <nav id="nav">
+        <nav id="nav" class="nav-links">
           <button
             class="menu-btn"
-            aria-label="Abrir menú"
-            onclick="document.getElementById('nav').classList.toggle('open')"
+            type="button"
+            aria-label="Abrir menú de navegación"
+            aria-expanded="false"
+            data-nav-toggle
           >
-            ☰
+            <span></span>
+            <span></span>
+            <span></span>
           </button>
-          <ul>
-            <li><a href="#destinos">Destinos</a></li>
-            <li><a href="#promos">Promociones</a></li>
-            <li><a href="#contacto">Contacto</a></li>
-          </ul>
+          <div class="nav-panel">
+            <ul class="nav-menu">
+              <li><a href="#destinos">Destinos</a></li>
+              <li><a href="#promos">Promociones</a></li>
+              <li><a href="#contacto">Contacto</a></li>
+            </ul>
+            <a href="#contacto" class="btn btn-primary nav-cta">Planificar viaje</a>
+          </div>
         </nav>
       </div>
     </header>

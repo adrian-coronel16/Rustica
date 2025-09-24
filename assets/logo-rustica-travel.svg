@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 420 150"
+  role="img"
+  aria-labelledby="rusticaLogoTitle rusticaLogoDesc"
+>
+  <title id="rusticaLogoTitle">Logotipo de Rustica Travel</title>
+  <desc id="rusticaLogoDesc">
+    Letra R estilizada con los textos Rustica Travel en dorado y un avión con una sonrisa
+    curva que representa la marca.
+  </desc>
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f9e27c" />
+      <stop offset="40%" stop-color="#f2c562" />
+      <stop offset="100%" stop-color="#b8811c" />
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-8%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <text
+      x="22"
+      y="94"
+      font-family="'Poppins', 'Segoe UI', sans-serif"
+      font-size="108"
+      font-weight="800"
+      letter-spacing="2"
+      fill="url(#logoGradient)"
+    >
+      R
+    </text>
+    <text
+      x="150"
+      y="94"
+      font-family="'Poppins', 'Segoe UI', sans-serif"
+      font-size="46"
+      font-weight="600"
+      letter-spacing="1"
+      fill="url(#logoGradient)"
+    >
+      ustica
+    </text>
+    <text
+      x="90"
+      y="140"
+      font-family="'Poppins', 'Segoe UI', sans-serif"
+      font-size="50"
+      font-weight="700"
+      letter-spacing="9"
+      fill="url(#logoGradient)"
+    >
+      TRAVEL
+    </text>
+    <path
+      d="M292 129c-51 32-127 35-194 3"
+      fill="none"
+      stroke="url(#logoGradient)"
+      stroke-width="10"
+      stroke-linecap="round"
+    />
+    <path
+      d="M288 70l66 14-9 16-39-5-11 21 9 20-11 4-13-21-38 11-6-10 35-24-19-28z"
+      fill="url(#logoGradient)"
+    />
+  </g>
+</svg>
