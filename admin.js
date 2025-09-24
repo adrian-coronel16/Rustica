@@ -1016,6 +1016,10 @@ function setupInlineContentEditor(element, options) {
   });
 
   element.addEventListener("keydown", (event) => {
+    if (element.querySelector(".slot-inline-editor")) {
+      return;
+    }
+
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       startEditing();
